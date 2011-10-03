@@ -160,14 +160,14 @@ void ctkWorkflowGroupBox::updateGroupBox(ctkWorkflowStep* currentStep)
 QString ctkWorkflowGroupBox::title()const
 {
   Q_D(const ctkWorkflowGroupBox);
-  return d->GroupBox->title();
+  return d->TitleLabel->text();
 }
 
 // --------------------------------------------------------------------------
 void ctkWorkflowGroupBox::setTitle(const QString& newTitleText)
 {
   Q_D(ctkWorkflowGroupBox);
-  d->GroupBox->setTitle(newTitleText);
+  d->TitleLabel->setText(newTitleText);
 }
 
 // --------------------------------------------------------------------------
