@@ -18,20 +18,20 @@
 
 =========================================================================*/
 
-#ifndef __ctkThumbnailWidgetPlugin_h
-#define __ctkThumbnailWidgetPlugin_h
+#ifndef __ctkCheckBoxPlugin_h
+#define __ctkCheckBoxPlugin_h
 
 // CTK includes
 #include "ctkWidgetsAbstractPlugin.h"
 
-class CTK_WIDGETS_PLUGINS_EXPORT ctkThumbnailWidgetPlugin :
+class CTK_WIDGETS_PLUGINS_EXPORT ctkCheckBoxPlugin :
   public QObject,
   public ctkWidgetsAbstractPlugin
 {
   Q_OBJECT
 
 public:
-  ctkThumbnailWidgetPlugin(QObject *_parent = 0);
+  ctkCheckBoxPlugin(QObject *_parent = 0);
 
   QWidget *createWidget(QWidget *_parent);
   QString  domXml() const;

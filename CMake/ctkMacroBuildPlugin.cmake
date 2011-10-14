@@ -57,7 +57,7 @@ MACRO(ctkMacroBuildPlugin)
   IF(NOT DEFINED MY_EXPORT_DIRECTIVE)
     MESSAGE(FATAL_ERROR "EXPORT_DIRECTIVE is mandatory")
   ENDIF()
- 
+
   # Plugin are expected to be shared library
   SET(MY_LIBRARY_TYPE "SHARED")
 
@@ -114,7 +114,7 @@ MACRO(ctkMacroBuildPlugin)
 
     SET(my_includes )
   ENDIF()
-  
+
   LIST(APPEND my_includes
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${CMAKE_CURRENT_BINARY_DIR}
@@ -131,18 +131,18 @@ MACRO(ctkMacroBuildPlugin)
 
   # Add Qt include dirs and defines
   INCLUDE(${QT_USE_FILE})
-    
+
   # Add the library directories from the external project
   ctkFunctionGetLibraryDirs(my_library_dirs ${lib_name})
-  
+
   LINK_DIRECTORIES(
     ${my_library_dirs}
     )
- 
+
   SET(MY_LIBRARY_EXPORT_DIRECTIVE ${MY_EXPORT_DIRECTIVE})
   SET(MY_EXPORT_HEADER_PREFIX "${lib_name}_")
   SET(MY_LIBNAME ${lib_name})
-  
+
   CONFIGURE_FILE(
     ${CTK_EXPORT_HEADER_TEMPLATE}
     ${CMAKE_CURRENT_BINARY_DIR}/${MY_EXPORT_HEADER_PREFIX}Export.h
@@ -245,7 +245,7 @@ MACRO(ctkMacroBuildPlugin)
     ${MY_UI_CPP}
     ${_plugin_qm_files}
     )
-  
+
   ADD_LIBRARY(${lib_name} ${MY_LIBRARY_TYPE}
     ${MY_SRCS}
     ${MY_MOC_CPP}
@@ -277,8 +277,18 @@ MACRO(ctkMacroBuildPlugin)
   ENDIF()
 
   SET(plugin_compile_flags "-DQT_PLUGIN")
-  # MinGW does not export all symbols automatically, so no need to set flags
-  IF(CMAKE_COMPILER_IS_GNUCXX AND NOT MINGW)
+
+  # MinGW does not export all symbols automatically, so no need to set flags.
+  #
+  # With gcc < 4.5, RTTI symbols from classes declared in third-party libraries
+  # which are not "gcc visibility aware" are marked with hidden visibility in
+  # DSOs which include the class declaration and which are compiled with
+  # hidden visibility. This leads to dynamic_cast and exception handling problems.
+  # While this problem could be worked around by sandwiching the include
+  # directives for the third-party headers between "#pragma visibility push/pop"
+  # statements, it is generally safer to just use default visibility with
+  # gcc < 4.5.
+  IF(CMAKE_COMPILER_IS_GNUCXX AND NOT ${GCC_VERSION} VERSION_LESS "4.5" AND NOT MINGW)
     SET(plugin_compile_flags "${plugin_compile_flags} -fvisibility=hidden -fvisibility-inlines-hidden")
   ENDIF()
 
@@ -294,11 +304,10 @@ MACRO(ctkMacroBuildPlugin)
   # Install rules
 # IF(MY_LIBRARY_TYPE STREQUAL "SHARED")
 # INSTALL(TARGETS ${lib_name}
-# RUNTIME DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Runtime
-# LIBRARY DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Runtime
+# LIBRARY DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT RuntimePlugins
 # ARCHIVE DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Development)
 # ENDIF()
-  
+
   SET(my_libs
     ${MY_TARGET_LIBRARIES}
     )
@@ -313,7 +322,7 @@ MACRO(ctkMacroBuildPlugin)
   IF(NOT MY_TEST_PLUGIN)
     SET(CTK_PLUGIN_LIBRARIES ${CTK_PLUGIN_LIBRARIES} ${lib_name} CACHE INTERNAL "CTK plugins" FORCE)
   ENDIF()
-  
+
   # Install headers
   #FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
   #INSTALL(FILES

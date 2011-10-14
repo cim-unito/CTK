@@ -82,6 +82,11 @@ void ctkVTKVolumePropertyWidgetPrivate::setupUi(QWidget* widget)
   Q_ASSERT(q == widget);
   this->Ui_ctkVTKVolumePropertyWidget::setupUi(widget);
 
+  double validBounds[4] = {VTK_DOUBLE_MIN, VTK_DOUBLE_MAX, 0., 1.};
+  this->ScalarOpacityWidget->view()->setValidBounds(validBounds);
+  this->ScalarColorWidget->view()->setValidBounds(validBounds);
+  this->GradientWidget->view()->setValidBounds(validBounds);
+
   this->ScalarOpacityWidget->view()->addCompositeFunction(0, 0, true, true);
   vtkCompositeControlPointsItem* composite = 
   vtkCompositeControlPointsItem::SafeDownCast(
@@ -362,16 +367,26 @@ void ctkVTKVolumePropertyWidget::onAxesModified()
 void ctkVTKVolumePropertyWidget::moveAllPoints(double xOffset, double yOffset)
 {
   Q_D(ctkVTKVolumePropertyWidget);
+  if (d->VolumeProperty)
+    {
+    d->VolumeProperty->InvokeEvent(vtkCommand::StartEvent);
+    }
   d->ScalarOpacityWidget->view()->moveAllPoints(xOffset, yOffset);
   d->ScalarColorWidget->view()->moveAllPoints(xOffset, yOffset);
   d->GradientWidget->view()->moveAllPoints(xOffset, yOffset);
+  if (d->VolumeProperty)
+    {
+    d->VolumeProperty->InvokeEvent(vtkCommand::EndEvent);
+    }
 }
 
 // ----------------------------------------------------------------------------
 void ctkVTKVolumePropertyWidget::spreadAllPoints(double factor)
 {
   Q_D(ctkVTKVolumePropertyWidget);
+  d->VolumeProperty->InvokeEvent(vtkCommand::StartEvent);
   d->ScalarOpacityWidget->view()->spreadAllPoints(factor);
   d->ScalarColorWidget->view()->spreadAllPoints(factor);
   d->GradientWidget->view()->spreadAllPoints(factor);
+  d->VolumeProperty->InvokeEvent(vtkCommand::EndEvent);
 }

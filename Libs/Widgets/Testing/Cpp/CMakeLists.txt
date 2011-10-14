@@ -6,6 +6,7 @@ SET(TEST_SOURCES
   ctkAxesWidgetTest1.cpp
   ctkButtonGroupTest1.cpp
   ctkCheckBoxPixmapsTest1.cpp
+  ctkCheckBoxTest1.cpp
   ctkCheckableComboBoxTest1.cpp
   ctkCheckableHeaderViewTest1.cpp
   ctkCheckableHeaderViewTest2.cpp
@@ -64,7 +65,7 @@ SET(TEST_SOURCES
   ctkSliderWidgetTest1.cpp
   ctkSliderWidgetTest2.cpp
   ctkThumbnailListWidgetTest1.cpp
-  ctkThumbnailWidgetTest1.cpp
+  ctkThumbnailLabelTest1.cpp
   ctkToolTipTrapperTest1.cpp
   ctkTreeComboBoxTest1.cpp
   ctkWidgetsUtilsTest1.cpp
@@ -133,6 +134,7 @@ SIMPLE_TEST( ctkAddRemoveComboBoxTest1 )
 SIMPLE_TEST( ctkAxesWidgetTest1 )
 SIMPLE_TEST( ctkButtonGroupTest1 )
 SIMPLE_TEST( ctkCheckBoxPixmapsTest1 )
+SIMPLE_TEST( ctkCheckBoxTest1 )
 SIMPLE_TEST( ctkCheckableComboBoxTest1 )
 SIMPLE_TEST( ctkCheckableHeaderViewTest1 )
 SIMPLE_TEST( ctkCheckableHeaderViewTest2 )
@@ -193,7 +195,7 @@ SIMPLE_TEST( ctkSignalMapperTest1 )
 SIMPLE_TEST( ctkSliderWidgetTest1 )
 SIMPLE_TEST( ctkSliderWidgetTest2 )
 SIMPLE_TEST( ctkThumbnailListWidgetTest1 )
-SIMPLE_TEST( ctkThumbnailWidgetTest1 )
+SIMPLE_TEST( ctkThumbnailLabelTest1 )
 SIMPLE_TEST( ctkToolTipTrapperTest1 )
 SIMPLE_TEST( ctkTreeComboBoxTest1 )
 SIMPLE_TEST( ctkWidgetsUtilsTest1 )
