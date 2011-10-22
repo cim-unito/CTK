@@ -104,7 +104,6 @@ void ctkWorkflowButtonBoxWidgetPrivate::setupUi(QWidget * newParent)
   newParent->layout()->addWidget(this->BackButton);
 
   this->NextButton = new QPushButton(nextIcon, this->NextButtonDefaultText, newParent);
-  this->NextButton->setLayoutDirection(Qt::RightToLeft);
   newParent->layout()->addWidget(this->NextButton);
 }
 
