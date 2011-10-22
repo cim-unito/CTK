@@ -415,10 +415,7 @@ void ctkWorkflowPrivate::processingAfterOnEntry()
       q->goForward();
       }
     }
-  else
-    {
-    emit q->currentStepChanged(this->CurrentStep);
-    }
+  emit q->currentStepChanged(this->CurrentStep);
 }
 
 // --------------------------------------------------------------------------
@@ -920,11 +917,11 @@ void ctkWorkflow::goToStep(const QString& targetId)
 
   logger.info(QString("goToStep - Attempting to go to finish step %1").arg(targetId));
 
-  // if (step == d->CurrentStep)
-  //   {
-  //   qDebug() << "we are already in the desired finish step";
-  //   return;
-  //   }
+  if (targetId == d->CurrentStep->id())
+   {
+   logger.info("we are already in the desired finish step");
+   return;
+   }
 
   d->GoToStep = d->stepFromId(targetId);
   d->StartingStep = d->CurrentStep;
@@ -970,7 +967,7 @@ void ctkWorkflow::evaluateValidationResults(bool validationSucceeded, const QStr
 void ctkWorkflow::goToNextStepAfterSuccessfulValidation(const QString& branchId)
 {
   Q_D(ctkWorkflow);
-  logger.debug("goToNextStepAfterSuccessfulValidation - Calidation succeeded");
+  logger.debug("goToNextStepAfterSuccessfulValidation - Validation succeeded");
   logger.info("goToNextStepAfterSuccessfulValidation - Posting TransitionToNextStep");
 
   // we may already be in the 'goTo' step - i.e. looping on a finish step
