@@ -251,9 +251,7 @@ void ctkSliderWidget::setValue(double _value)
   bool isChanging = d->Changing;
   d->Changing = false;
   d->SpinBox->setValue(_value);
-  // Why do we need to set the value to the slider ?
-  //d->Slider->setValue(d->SpinBox->value());
-  //double spinBoxValue = d->SpinBox->value();
+  d->Slider->setValue(d->SpinBox->value());
   Q_ASSERT(d->equal(d->SpinBox->minimum(),d->Slider->minimum()));
   Q_ASSERT(d->equal(d->SpinBox->value(),d->Slider->value()));
   Q_ASSERT(d->equal(d->SpinBox->maximum(),d->Slider->maximum()));
