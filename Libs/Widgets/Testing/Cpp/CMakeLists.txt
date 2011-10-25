@@ -74,6 +74,7 @@ SET(TEST_SOURCES
   ctkWorkflowWidgetTest2.cpp
   ctkExampleUseOfWorkflowWidgetUsingDerivedSteps.cpp
   ctkExampleUseOfWorkflowWidgetUsingSignalsAndSlots.cpp
+  ctkExampleUseOfWorkflowWidgetUsingThreads.cpp
   )
 
 #
@@ -101,12 +102,18 @@ SET(Tests_SRCS
   ctkExampleWorkflowWidgetStepUsingSignalsAndSlots.h
   ctkSettingsPanelTest2Helper.cpp
   ctkSettingsPanelTest2Helper.h
+  ctkWorkflowStepThread.cpp
+  ctkWorkflowStepThread.h
+  ctkWorkflowStepWithThreadWidget.cpp
+  ctkWorkflowStepWithThreadWidget.h
   )
 
 SET(Tests_MOC_SRCS
   ctkExampleDerivedWorkflowWidgetStep.h
   ctkExampleWorkflowWidgetStepUsingSignalsAndSlots.h
   ctkSettingsPanelTest2Helper.h
+  ctkWorkflowStepThread.h
+  ctkWorkflowStepWithThreadWidget.h
   )
 
 SET(Tests_MOC_CPP)
@@ -163,6 +170,7 @@ SIMPLE_TEST( ctkDynamicSpacerTest2 )
 SIMPLE_TEST( ctkErrorLogWidgetTest1 )
 SIMPLE_TEST( ctkExampleUseOfWorkflowWidgetUsingDerivedSteps )
 SIMPLE_TEST( ctkExampleUseOfWorkflowWidgetUsingSignalsAndSlots )
+SIMPLE_TEST( ctkExampleUseOfWorkflowWidgetUsingThreads )
 SIMPLE_TEST( ctkExpandButtonTest1 )
 SIMPLE_TEST( ctkFileDialogTest1 )
 SIMPLE_TEST( ctkFittedTextBrowserTest1 )
