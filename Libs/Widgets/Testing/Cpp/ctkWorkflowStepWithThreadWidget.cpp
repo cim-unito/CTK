@@ -45,9 +45,9 @@ void ctkWorkflowStepWithThreadWidget::onExit(const ctkWorkflowStep* goingTo, con
 {
   Q_UNUSED(goingTo);
 
+  qDebug() << name() << "onExit";
   if (transitionType != ctkWorkflowInterstepTransition::TransitionToNextStep)
   {
-    qDebug() << name() << "onExit";
 //    qDebug() << "goingTo:" << goingTo->name();
     // signals that we are finished
     this->onExitComplete();
