@@ -44,7 +44,7 @@ ctkServiceRegistration::ctkServiceRegistration()
 ctkServiceRegistration::ctkServiceRegistration(const ctkServiceRegistration& reg)
   : d_ptr(reg.d_ptr)
 {
-  d_func()->ref.ref();
+  if (d_func()) d_func()->ref.ref();
 }
 
 //----------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void ctkServiceRegistration::setProperties(const ctkDictionary& props)
     {
       // NYI! Optimize the MODIFIED_ENDMATCH code
       int old_rank = d->properties.value(ctkPluginConstants::SERVICE_RANKING).toInt();
-      before = d->plugin->fwCtx->listeners.getMatchingServiceSlots(d->reference);
+      before = d->plugin->fwCtx->listeners.getMatchingServiceSlots(d->reference, false);
       QStringList classes = d->properties.value(ctkPluginConstants::OBJECTCLASS).toStringList();
       qlonglong sid = d->properties.value(ctkPluginConstants::SERVICE_ID).toLongLong();
       d->properties = ctkServices::createServiceProperties(props, classes, sid);

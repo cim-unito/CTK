@@ -21,76 +21,20 @@
 // Qt includes
 #include <QCoreApplication>
 #include <QDebug>
-#include <QStringList>
 
 // CTK includes
-#include "ctkErrorLogModel.h"
 #include "ctkVTKErrorLogMessageHandler.h"
 #include "ctkModelTester.h"
 
 // VTK includes
 #include <vtkOutputWindow.h>
 
-// STL includes
+// STL includesQList
 #include <cstdlib>
 #include <iostream>
 
-namespace
-{
-//-----------------------------------------------------------------------------
-// Utility function
-
-//-----------------------------------------------------------------------------
-QString checkRowCount(int line, int currentRowCount, int expectedRowCount)
-{
-  if (currentRowCount != expectedRowCount)
-    {
-    QString errorMsg("Line %1 - Expected rowCount: %2 - Current rowCount: %3\n");
-    return errorMsg.arg(line).arg(expectedRowCount).arg(currentRowCount);
-    }
-  return QString();
-}
-
-//-----------------------------------------------------------------------------
-QString checkTextMessages(int line, const ctkErrorLogModel& model, const QStringList& expectedMessages)
-{
-  for(int i=0; i < expectedMessages.count(); ++i)
-    {
-    QModelIndex descriptionIndex = model.index(i, ctkErrorLogModel::DescriptionColumn);
-    QString currentMessage = descriptionIndex.data(ctkErrorLogModel::DescriptionTextRole).toString();
-    if (currentMessage.compare(expectedMessages.value(i)) != 0)
-      {
-      QString errorMsg("Line %1 - Problem with row%2 !\n"
-                       "\tExpected message [%3]\n"
-                       "\tCurrent message [%4]\n");
-      return errorMsg.arg(line).arg(i).arg(expectedMessages.value(i)).arg(currentMessage);
-      }
-    }
-  return QString();
-}
-
-//-----------------------------------------------------------------------------
-void printTextMessages(const ctkErrorLogModel& model)
-{
-  fprintf(stdout, "%s", "ErrorLogModel rows:\n");
-  QString text("\trow %1 => %2\n");
-  for (int i=0; i < model.rowCount(); ++i)
-    {
-    QString description =
-        model.index(0, ctkErrorLogModel::DescriptionColumn).data().toString();
-    fprintf(stdout, "%s", qPrintable(text.arg(i).arg(description)));
-    }
-  fflush(stdout);
-}
-
-//-----------------------------------------------------------------------------
-void printErrorMessage(const QString& errorMessage)
-{
-  fprintf(stderr, "%s", qPrintable(errorMessage));
-  fflush(stderr);
-}
-
-} // end namespace
+// Helper functions
+#include "Testing/Cpp/ctkErrorLogModelTestHelper.cpp"
 
 //-----------------------------------------------------------------------------
 int ctkVTKErrorLogModelTest1(int argc, char * argv [])
@@ -130,6 +74,9 @@ int ctkVTKErrorLogModelTest1(int argc, char * argv [])
 
     QString vtkMessage2("This is a VTK error message");
     vtkOutputWindowDisplayErrorText(qPrintable(vtkMessage2));
+
+    // Give enough time to the ErrorLogModel to consider the queued messages.
+    processEvents(1000);
 
     QStringList expectedVTKMessages;
     expectedVTKMessages << vtkMessage0 << vtkMessage1 << vtkMessage2;

@@ -41,6 +41,7 @@ private:
 
   QObject* frameworkTestSuite;
   QObject* serviceListenerTestSuite;
+  QObject* serviceTrackerTestSuite;
 };
 
 #endif // CTKPLUGINFRAMEWORKTESTACTIVATOR_H

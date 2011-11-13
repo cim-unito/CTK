@@ -226,16 +226,18 @@ void ctkCheckablePushButton::setCheckState(Qt::CheckState checkState)
 {
   Q_D(ctkCheckablePushButton);
   Qt::CheckState oldCheckState = d->CheckState;
-  if (checkState != oldCheckState)
+  if (checkState == oldCheckState)
     {
-    d->CheckState = checkState;
-    if (d->CheckBoxFlags & Qt::ItemIsEnabled)
-      {
-      setCheckable(checkState == Qt::Checked);
-      }
-    this->update();
-    emit checkStateChanged(checkState);
+    return;
     }
+  d->CheckState = checkState;
+  if (d->CheckBoxFlags & Qt::ItemIsEnabled)
+    {
+    this->setCheckable(checkState == Qt::Checked);
+    }
+  this->update();
+  emit checkStateChanged(d->CheckState);
+  emit checkBoxToggled(d->CheckState == Qt::Checked);
 }
 
 //-----------------------------------------------------------------------------
@@ -340,7 +342,7 @@ void ctkCheckablePushButton::paintEvent(QPaintEvent * _event)
   int indicatorSpacing = this->style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing, &opt, this);
   int buttonMargin = this->style()->pixelMetric(QStyle::PM_ButtonMargin, &opt, this);
   // Draw Indicator
-  QStyleOption indicatorOpt;
+  QStyleOptionButton indicatorOpt;
   indicatorOpt.init(this);
   if (!(d->CheckBoxFlags & Qt::ItemIsUserCheckable))
     {
