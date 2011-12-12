@@ -33,6 +33,7 @@ class QTreeWidgetItem;
 class ctkSettingsDialogPrivate;
 class ctkSettingsPanel;
 
+/// \ingroup Widgets
 class CTK_WIDGETS_EXPORT ctkSettingsDialog : public QDialog
 {
   Q_OBJECT
@@ -60,7 +61,7 @@ public:
 
   void adjustTreeWidgetToContents();
 
-public slots:
+public Q_SLOTS:
   void setCurrentPanel(ctkSettingsPanel* panel);
   void setCurrentPanel(const QString& label);
 
@@ -71,10 +72,10 @@ public slots:
   virtual void accept();
   virtual void reject();
 
-signals:
+Q_SIGNALS:
   void settingChanged(const QString& key, const QVariant& value);
 
-protected slots:
+protected Q_SLOTS:
   void onSettingChanged(const QString& key, const QVariant& newVal);
   void onCurrentItemChanged(QTreeWidgetItem* currentItem, QTreeWidgetItem* previous);
   void onDialogButtonClicked(QAbstractButton* button);

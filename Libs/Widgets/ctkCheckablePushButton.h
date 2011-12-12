@@ -31,6 +31,7 @@
 
 class ctkCheckablePushButtonPrivate;
 
+/// \ingroup Widgets
 /// Description
 /// ctkCheckablePushButton is a QPushButton with a checkbox. By default
 /// the checkbox is connected to the checkable property of the push button.
@@ -42,6 +43,9 @@ class ctkCheckablePushButtonPrivate;
 /// \note In checkBoxControlsButton mode, calling setCheckable instead of
 /// setCheckState may not refresh the button automatically. Use setCheckState
 /// instead.
+/// \note You can automatically check the button when the user checks the
+/// checkbox by connecting the checkBoxToggled(bool) signal with the
+/// setChecked(bool) slot.
 class CTK_WIDGETS_EXPORT ctkCheckablePushButton : public QPushButton
 {
   Q_OBJECT
@@ -80,7 +84,10 @@ public:
   virtual bool isCheckBoxUserCheckable()const;
   virtual void setCheckBoxUserCheckable(bool b);
 
-signals:
+Q_SIGNALS:
+  /// Fired anytime the checkbox change of state
+  void checkBoxToggled(bool);
+  /// Fired anytime the checkbox change of state
   void checkStateChanged(Qt::CheckState newCheckState);
 
 protected:

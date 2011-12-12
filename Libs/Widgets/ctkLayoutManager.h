@@ -31,6 +31,7 @@ class QWidgetItem;
 #include "ctkWidgetsExport.h"
 class ctkLayoutManagerPrivate;
 
+/// \ingroup Widgets
 /// ctkLayoutManager is
 class CTK_WIDGETS_EXPORT ctkLayoutManager: public QObject
 {
@@ -53,9 +54,9 @@ public:
 
   void refresh();
 
-public slots:
+public Q_SLOTS:
 
-signals:
+Q_SIGNALS:
   void layoutChanged();
 
 protected:

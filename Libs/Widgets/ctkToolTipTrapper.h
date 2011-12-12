@@ -59,6 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ctkWidgetsExport.h"
 class ctkToolTipTrapperPrivate;
 
+/// \ingroup Widgets
 /// To prevent tooltips from appearing, create an instance of this object.
 class CTK_WIDGETS_EXPORT ctkToolTipTrapper : public QObject
 {
@@ -83,7 +84,7 @@ public:
   /// it manually.
   bool eventFilter(QObject* watched, QEvent* event);
 
-public slots:
+public Q_SLOTS:
   /// If true, it installs the eventFilter on the application. Otherwise
   /// it removes it.
   void setEnabled(bool enable);

@@ -35,6 +35,7 @@ class ctkDirectoryButtonPrivate;
 // it is disabled to support older Qt versions
 //#define USE_QFILEDIALOG_OPTIONS 1
 
+/// \ingroup Widgets
 /// ctkDirectoryButton is a QPushButton to select a directory path.
 /// The absolute path is displayed on the button. When clicked, a
 /// file dialog pops up to select a new directory path.
@@ -111,12 +112,12 @@ public:
   const Options& options()const;
 #endif
 
-public slots:
+public Q_SLOTS:
   /// browse() opens a pop up where the user can select a new directory for the
   /// button. browse() is automatically called when the button is clicked.
   void browse();
 
-signals:
+Q_SIGNALS:
   /// directoryChanged is emitted when the current directory changes.
   /// Programatically or by the user via the file dialog that pop up when 
   /// clicking on the button.

@@ -63,9 +63,15 @@ INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroGeneratePluginResourceFile.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetIncludeDirs.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetLibraryDirs.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionExtractPluginTargets.cmake")
-INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroSetupExternalPlugins.cmake")
+INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetAllPluginTargets.cmake")
+INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetTargetDependencies.cmake")
+INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetPluginDependencies.cmake")
+INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroSetupPlugins.cmake")
 
 SET(CTK_EXPORT_HEADER_TEMPLATE "@CTK_EXPORT_HEADER_TEMPLATE@")
+
+# Directory containing the ctkConfig.h file
+SET(CTK_CONFIG_H_INCLUDE_DIR @CTK_CONFIG_H_INCLUDE_DIR@)
 
 # The CTK DGraph executable used to compute target dependency graphs
 SET(CTK_DGRAPH_EXECUTABLE "@DGraph_EXECUTABLE@")
@@ -135,7 +141,7 @@ SET(CTK_QT_QMAKE_EXECUTABLE "@QT_QMAKE_EXECUTABLE@")
 # The CTK version number
 SET(CTK_MAJOR_VERSION "@CTK_MAJOR_VERSION@")
 SET(CTK_MINOR_VERSION "@CTK_MINOR_VERSION@")
-SET(CTK_BUILD_VERSION "@CTK_BUILD_VERSION@")
+SET(CTK_PATCH_VERSION "@CTK_PATCH_VERSION@")
 
 # The location of the UseCTK.cmake file.
 SET(CTK_USE_FILE "@CTK_USE_FILE@")

@@ -30,6 +30,7 @@ class ctkDICOMAppWidgetPrivate;
 class ctkThumbnailLabel;
 class QModelIndex;
 
+/// \ingroup DICOM_Widgets
 class CTK_DICOM_WIDGETS_EXPORT ctkDICOMAppWidget : public QWidget
 {
   Q_OBJECT
@@ -49,25 +50,28 @@ public:
   void setSearchWidgetPopUpMode(bool flag);
   bool searchWidgetPopUpMode();
 
-public slots:
+public Q_SLOTS:
   void setDatabaseDirectory(const QString& directory);
   void onAddToDatabase();
 
   void openImportDialog();
   void openExportDialog();
   void openQueryDialog();
+  void onRemoveAction();
 
   void suspendModel();
   void resumeModel();
   void resetModel();
 
-signals:
+Q_SIGNALS:
   /// Emited when directory is changed
   void databaseDirectoryChanged(const QString&);
+  /// Emited when query/retrieve operation has happened
+  void queryRetrieveFinished();
 
 protected:
     QScopedPointer<ctkDICOMAppWidgetPrivate> d_ptr;
-protected slots:
+protected Q_SLOTS:
     void onImportDirectory(QString directory);
     void onModelSelected(const QModelIndex& index);
 
@@ -84,6 +88,9 @@ protected slots:
     void onPreviousSeries();
     void onNextStudy();
     void onPreviousStudy();
+
+    /// To be called when dialog finishes
+    void onQueryRetrieveFinished();
 
     /// To be called when an entry of the tree list is collapsed
     void onTreeCollapsed(const QModelIndex& index);
@@ -106,7 +113,7 @@ protected slots:
     /// To be called after image preview displayed an image
     void onImagePreviewDisplayed(int imageID, int count);
 
-private slots:
+private Q_SLOTS:
 
     void onSearchPopUpButtonClicked();
 

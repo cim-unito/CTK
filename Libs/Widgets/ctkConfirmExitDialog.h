@@ -29,7 +29,7 @@
 
 class ctkConfirmExitDialogPrivate;
 
-///
+/// \ingroup Widgets
 class CTK_WIDGETS_EXPORT ctkConfirmExitDialog : public QDialog
 {
   Q_OBJECT
@@ -59,7 +59,7 @@ public:
   /// Reimplemented for internal reasons
   virtual void setVisible(bool visible);
 
-public slots:
+public Q_SLOTS:
   /// reimplemented for internal reasons
   virtual void accept();
 

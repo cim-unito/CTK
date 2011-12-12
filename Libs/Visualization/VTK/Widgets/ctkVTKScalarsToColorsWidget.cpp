@@ -119,10 +119,8 @@ void ctkVTKScalarsToColorsWidgetPrivate::setupUi(QWidget* widget)
   QObject::connect(this->YRangeSlider, SIGNAL(valuesChanged(double,double)),
                    q, SIGNAL(axesModified()));
 
-  q->qvtkConnect(this->View->chart()->GetAxis(0),vtkCommand::ModifiedEvent,
-                    q, SLOT(onAxesModified()));
-  q->qvtkConnect(this->View->chart()->GetAxis(1),vtkCommand::ModifiedEvent,
-                    q, SLOT(onAxesModified()));
+  QObject::connect(this->View, SIGNAL(extentChanged()),
+                   q, SLOT(onAxesModified()));
 
   this->ExpandButton->setMirrorOnExpand(true);
   QObject::connect(this->ExpandButton, SIGNAL(clicked(bool)),
@@ -145,6 +143,12 @@ bool ctkVTKScalarsToColorsWidgetPrivate::checkXRange(double x, int pointId)
   Q_Q(ctkVTKScalarsToColorsWidget);
   QPalette wrongPalette = q->palette();
   wrongPalette.setColor(QPalette::Highlight, Qt::red);
+  if (pointId < 0 ||
+      pointId >= this->PointIdSpinBox->maximum())
+    {
+    QTimer::singleShot(2000, q, SLOT(restorePalette()));
+    return false;
+    }
   if (pointId > 0)
     {
     double previous[4];
@@ -261,13 +265,24 @@ void ctkVTKScalarsToColorsWidget::onBoundsChanged()
 // ----------------------------------------------------------------------------
 void ctkVTKScalarsToColorsWidget::setCurrentPoint(vtkObject* caller, void* callData)
 {
+  Q_D(ctkVTKScalarsToColorsWidget);
   vtkControlPointsItem* controlPoints = reinterpret_cast<vtkControlPointsItem*>(caller);
   long newPoint = reinterpret_cast<long>(callData);
   if (!controlPoints || newPoint < -1)
     {
     return;
     }
-  this->setCurrentControlPointsItem(controlPoints);
+  if (d->CurrentControlPointsItem != controlPoints)
+    {
+    this->setCurrentControlPointsItem(controlPoints);
+    }
+  else
+    {
+    // When a new point is added, the modified event is fired later.
+    // however we need to update the max of the current spin box before
+    // setting the new value.
+    this->updateCurrentPoint();
+    }
   this->setCurrentPoint(newPoint);
 }
 
@@ -421,7 +436,10 @@ void ctkVTKScalarsToColorsWidget::onColorChanged(const QColor& color)
 void ctkVTKScalarsToColorsWidget::onXChanged(double x)
 {
   Q_D(ctkVTKScalarsToColorsWidget);
-  Q_ASSERT(d->CurrentControlPointsItem);
+  if (!d->CurrentControlPointsItem)
+    {
+    return;
+    }
 
   bool validRange = d->checkXRange(x, d->PointIdSpinBox->value());
   if (!validRange)
@@ -564,4 +582,28 @@ void ctkVTKScalarsToColorsWidget::onExpandButton(bool state)
   d->MidPointSpinBox->setVisible(state);
   d->SharpnessLabel->setVisible(state);
   d->SharpnessSpinBox->setVisible(state);
+}
+
+// ----------------------------------------------------------------------------
+QWidgetList ctkVTKScalarsToColorsWidget::extraWidgets()const
+{
+  Q_D(const ctkVTKScalarsToColorsWidget);
+  QWidgetList widgets;
+  for (int i = 0; i < d->TopLayout->count(); ++i)
+    {
+    QLayoutItem* topLeftItem = d->TopLayout->itemAt(i);
+    if (topLeftItem->spacerItem())
+      {
+      break;
+      }
+    widgets << topLeftItem->widget();
+    }
+  return widgets;
+}
+
+// ----------------------------------------------------------------------------
+void ctkVTKScalarsToColorsWidget::addExtraWidget(QWidget* extraWidget)
+{
+  Q_D(const ctkVTKScalarsToColorsWidget);
+  d->TopLayout->insertWidget(this->extraWidgets().count(), extraWidget);
 }

@@ -35,12 +35,13 @@ class ctkDicomHostServerPrivate : public QObject
   Q_OBJECT
 
 public:
-  ctkDicomHostServerPrivate(ctkDicomHostInterface* hostInterface, int port);
+  ctkDicomHostServerPrivate(ctkDicomHostInterface* hostInterface, int port, QString path);
 
   ctkSimpleSoapServer Server;
   int Port;
+  QString Path;
 
-public slots:
+public Q_SLOTS:
 
   void incomingSoapMessage(const QtSoapMessage& message,
                            QtSoapMessage* reply);

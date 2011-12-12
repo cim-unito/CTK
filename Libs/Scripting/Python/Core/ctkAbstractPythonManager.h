@@ -31,6 +31,7 @@
 
 class PythonQtObjectPtr;
 
+/// \ingroup Scripting_Python_Core
 class CTK_SCRIPTING_PYTHON_CORE_EXPORT ctkAbstractPythonManager : public QObject
 {
   Q_OBJECT
@@ -84,7 +85,7 @@ public:
   /// \sa pythonInitialized
   bool isPythonInitialized()const;
 
-signals:
+Q_SIGNALS:
 
   /// This signal is emitted after python is pre-initialized. Observers can listen
   /// for this signal to handle additional initialization steps.
@@ -96,7 +97,7 @@ signals:
   /// \sa executeScripts
   void pythonInitialized();
 
-protected slots:
+protected Q_SLOTS:
   void printStderr(const QString&);
   void printStdout(const QString&);
 

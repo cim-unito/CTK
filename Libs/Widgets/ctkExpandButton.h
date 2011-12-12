@@ -31,6 +31,7 @@
 
 class ctkExpandButtonPrivate;
 
+/// \ingroup Widgets
 /// QToolButton with a standard icon
 /// This button has the same behavior as the extension
 /// button which appear as the last item in the toolbar
@@ -58,7 +59,7 @@ public:
 
   virtual QSize sizeHint() const;
 
-private slots:
+private Q_SLOTS:
   void updateIcon(Qt::LayoutDirection newDirection);
 
 protected:

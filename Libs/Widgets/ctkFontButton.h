@@ -29,6 +29,7 @@
 #include "ctkWidgetsExport.h"
 class ctkFontButtonPrivate;
 
+/// \ingroup Widgets
 class CTK_WIDGETS_EXPORT ctkFontButton: public QPushButton
 {
   Q_OBJECT
@@ -49,12 +50,12 @@ public:
   void setCurrentFont(const QFont& newFont);
   QFont currentFont()const;
 
-public slots:
+public Q_SLOTS:
   /// browse() opens a pop up where the user can select a new font.
   /// browse() is automatically called when the button is clicked.
   void browseFont();
 
-signals:
+Q_SIGNALS:
   /// Fired anytime the current font changed.
   /// Programatically or by the user via the file dialog that pop up when 
   /// clicking on the button.

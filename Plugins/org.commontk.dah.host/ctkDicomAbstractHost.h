@@ -48,7 +48,7 @@ class org_commontk_dah_host_EXPORT ctkDicomAbstractHost : public QObject, public
 public:
 
   /**
-   * @brief Starts the soap sever on the specified port or choose port automatically.
+   * @brief Starts the soap server on the specified port or choose port automatically.
    *
    * @param hostPort
    * @param appPort
@@ -93,7 +93,7 @@ public:
    *
    * @return ctkDicomAppHosting::State
   */
-  ctkDicomAppHosting::State getApplicationState()const;
+  ctkDicomAppHosting::State getApplicationState() const;
 
   /**
    * @brief Gets the application service in order to call methods on the hosted app.
@@ -120,7 +120,7 @@ public:
    *
    * @return ctkDicomObjectLocatorCache *
   */
-  ctkDicomObjectLocatorCache* objectLocatorCache()const;
+  ctkDicomObjectLocatorCache* objectLocatorCache() const;
 
   /**
    * @brief
@@ -131,7 +131,7 @@ public:
   */
   bool publishData(const ctkDicomAppHosting::AvailableData& availableData, bool lastData);
 
-signals:
+Q_SIGNALS:
   /**
    * @brief Emitted when the ctkDicomAppHosting::IDLE state notification has been received, and the previous state was EXIT, IDLE or CANCELED.
    * @todo: perhaps also send this when completed. Needs discussion.

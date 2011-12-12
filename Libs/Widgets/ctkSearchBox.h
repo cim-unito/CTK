@@ -29,6 +29,7 @@
 
 class ctkSearchBoxPrivate;
 
+/// \ingroup Widgets
 /// QLineEdit with two QIcons on each side: search and clear.
 /// "Search" selects all the text
 /// "Clear" clears the current text
@@ -70,7 +71,7 @@ public:
   void setAlwaysShowClearIcon(bool);
   bool alwaysShowClearIcon()const;
 
-protected slots:
+protected Q_SLOTS:
   /// Change the clear icon's state to enabled or disabled.
   void updateClearButtonState();
 

@@ -32,6 +32,7 @@
 class ctkCollapsibleButtonPrivate;
 class QStyleOptionButton;
 
+/// \ingroup Widgets
 /// A collapsible button that shows/hides its children depending on its
 /// checked/collapsed property.
 /// Warning: <old behavior> As ctkCollapsibleButton forces the Visiblity of its children to
@@ -126,13 +127,13 @@ public:
   /// Don't process Show/Hide events of children when it is
   /// ctkCollapsibleButton that generate them.
   virtual void setVisible(bool);
-signals:
+Q_SIGNALS:
   /// 
   /// Signal emitted when the widget is collapsed or expanded.
   /// See signal toggled(bool) for the opposite.
   void contentsCollapsed(bool);
 
-protected slots:
+protected Q_SLOTS:
   /// 
   /// Perform the collapse.
   virtual void collapse(bool c);

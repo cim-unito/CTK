@@ -22,7 +22,7 @@
 #define __ctkVTKChartView_h
 
 // CTK includes
-#include <ctkPimpl.h>
+#include <ctkVTKObject.h>
 #include "ctkVisualizationVTKWidgetsExport.h"
 class ctkVTKChartViewPrivate;
 
@@ -33,9 +33,11 @@ class vtkChartXY;
 class vtkContextScene;
 class vtkPlot;
 
+/// \ingroup Visualization_VTK_Widgets
 class CTK_VISUALIZATION_VTK_WIDGETS_EXPORT ctkVTKChartView : public QVTKWidget
 {
   Q_OBJECT
+  QVTK_OBJECT
   Q_PROPERTY(QString title READ title WRITE setTitle)
 
 public:
@@ -55,11 +57,17 @@ public:
   QString title()const;
   void setTitle(const QString& title);
 
+  /// Return the chart extent for the 4 chart axes.
+  /// extent must be an array of 8 doubles
+  /// The current extent is the visible area on the chart.
+  /// it is equivalent to the Minimum/Maximum of the axes
+  void chartExtent(double bounds[8])const;
+
   /// Return the chart bounds for the 4 chart axes.
   /// bounds must be an array of 8 doubles.
   /// If no bounds is provided by the user, compute the bounds for the 4 chart
   /// axes from the vtkPlots bounds.
-  void chartBounds(double* bounds)const;
+  void chartBounds(double bounds[8])const;
   void setChartUserBounds(double* bounds);
   void chartUserBounds(double* bounds)const;
 
@@ -67,9 +75,12 @@ public:
   virtual void setAxesToChartBounds();
   virtual void boundAxesToChartBounds();
 
-signals:
+Q_SIGNALS:
   void plotAdded(vtkPlot* plot);
+  /// Fired anytime the bound of a plot modifies the overal bounds
   void boundsChanged();
+  /// Fired anytime an axis is modified.
+  void extentChanged();
 
 protected:
   QScopedPointer<ctkVTKChartViewPrivate> d_ptr;

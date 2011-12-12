@@ -28,6 +28,7 @@
 #include "ctkWidgetsExport.h"
 class ctkCollapsibleGroupBoxPrivate;
 
+/// \ingroup Widgets
 /// A QGroupBox with an arrow indicator that shows/hides the groupbox contents
 /// when clicked. It responds to the slot QGroupBox::setChecked(bool) or
 /// ctkCollapsibleGroupBox::setCollapsed(bool)
@@ -58,7 +59,7 @@ public:
 
   /// Reimplemented for internal reasons
   virtual void setVisible(bool show);
-protected slots:
+protected Q_SLOTS:
   /// called when the arrow indicator is clicked
   /// users can call it programatically by calling setChecked(bool)
   virtual void expand(bool expand);

@@ -44,7 +44,7 @@ public:
   ~ctkRuntimeException() throw() {}
 
   QString getCause() const;
-  void setCause(const QString& cause) throw(std::logic_error);
+  void setCause(const QString& cause);
 
   const char* what() const throw();
 
@@ -52,5 +52,15 @@ private:
 
   QString  cause;
 };
+
+/**
+ * \ingroup PluginFramework
+ */
+typedef ctkRuntimeException ctkIllegalStateException;
+
+/**
+ * \ingroup PluginFramework
+ */
+CTK_PLUGINFW_EXPORT QDebug operator<<(QDebug dbg, const ctkRuntimeException& exc);
 
 #endif // CTKRUNTIMEEXCEPTION_H

@@ -1,13 +1,13 @@
-PROJECT(${PROJECT_NAME}Plugins)
+project(${PROJECT_NAME}Plugins)
 
 #
 # See CTK/CMake/ctkMacroBuildQtDesignerPlugin.cmake for details
 #
 
-SET(PLUGIN_export_directive "CTK_WIDGETS_PLUGINS_EXPORT")
+set(PLUGIN_export_directive "CTK_WIDGETS_PLUGINS_EXPORT")
 
 # Source files
-SET(PLUGIN_SRCS
+set(PLUGIN_SRCS
   ctkWidgetsPlugins.cpp
   ctkWidgetsPlugins.h
   ctkWidgetsAbstractPlugin.cpp
@@ -18,6 +18,8 @@ SET(PLUGIN_SRCS
   ctkAxesWidgetPlugin.h
   ctkCheckableComboBoxPlugin.cpp
   ctkCheckableComboBoxPlugin.h
+  ctkCheckablePushButtonPlugin.cpp
+  ctkCheckablePushButtonPlugin.h
   ctkCheckBoxPlugin.cpp
   ctkCheckBoxPlugin.h
   ctkCollapsibleButtonPlugin.cpp
@@ -87,12 +89,13 @@ SET(PLUGIN_SRCS
   )
 
 # Headers that should run through moc
-SET(PLUGIN_MOC_SRCS
+set(PLUGIN_MOC_SRCS
   ctkWidgetsPlugins.h
 
   ctkActionsWidgetPlugin.h
   ctkAxesWidgetPlugin.h
   ctkCheckableComboBoxPlugin.h
+  ctkCheckablePushButtonPlugin.h
   ctkCheckBoxPlugin.h
   ctkCollapsibleButtonPlugin.h
   ctkCollapsibleGroupBoxPlugin.h
@@ -129,12 +132,12 @@ SET(PLUGIN_MOC_SRCS
   )
 
 # Resources
-SET(PLUGIN_resources
+set(PLUGIN_resources
   Resources/ctkWidgetsPlugins.qrc
 )
 
 # Target libraries
-SET(PLUGIN_target_libraries
+set(PLUGIN_target_libraries
   CTKWidgets
   )
 

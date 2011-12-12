@@ -35,6 +35,7 @@ class vtkControlPointsItem;
 class vtkLookupTable;
 class vtkPiecewiseFunction;
 
+/// \ingroup Visualization_VTK_Widgets
 class CTK_VISUALIZATION_VTK_WIDGETS_EXPORT ctkVTKScalarsToColorsView
   : public ctkVTKChartView
 {
@@ -93,20 +94,22 @@ public:
   /// Reimplemented to set the bounds to the plots as well
   virtual void boundAxesToChartBounds();
 
-public slots:
+public Q_SLOTS:
   void editPoint(vtkObject* plot, void * pointId);
 
   /// Move all the control points by a given offset.
   /// \sa vtkControlPoints::movePoints()
-  void moveAllPoints(double xOffset, double yOffset = 0.);
+  void moveAllPoints(double xOffset, double yOffset = 0.,
+                     bool dontMoveFirstAndLast = false);
 
   /// Spread all the control points by a given offset.
   /// A value >0 will space the control points, a value <0. will contract
   /// them.
   /// \sa vtkControlPoints::spreadPoints()
-  void spreadAllPoints(double factor = 1.);
+  void spreadAllPoints(double factor = 1.,
+                       bool dontMoveFirstAndLast = false);
 
-protected slots:
+protected Q_SLOTS:
   void onBoundsChanged();
 
 protected:

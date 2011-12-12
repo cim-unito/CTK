@@ -97,7 +97,6 @@ ctkDICOMAppWidgetPrivate::ctkDICOMAppWidgetPrivate(ctkDICOMAppWidget* parent): q
   ThumbnailGenerator = QSharedPointer <ctkDICOMThumbnailGenerator> (new ctkDICOMThumbnailGenerator);
   DICOMDatabase->setThumbnailGenerator(ThumbnailGenerator.data());
   DICOMIndexer = QSharedPointer<ctkDICOMIndexer> (new ctkDICOMIndexer);
-  DICOMIndexer->setThumbnailGenerator(ThumbnailGenerator.data());
 }
 
 //----------------------------------------------------------------------------
@@ -173,6 +172,7 @@ ctkDICOMAppWidget::ctkDICOMAppWidget(QWidget* _parent):Superclass(_parent),
   connect(d->ImportDialog, SIGNAL(fileSelected(QString)),this,SLOT(onImportDirectory(QString)));
 
   connect(d->QueryRetrieveWidget, SIGNAL(canceled()), d->QueryRetrieveWidget, SLOT(hide()) );
+  connect(d->QueryRetrieveWidget, SIGNAL(canceled()), this, SLOT(onQueryRetrieveFinished()) );
 
   connect(d->ImagePreview, SIGNAL(requestNextImage()), this, SLOT(onNextImage()));
   connect(d->ImagePreview, SIGNAL(requestPreviousImage()), this, SLOT(onPreviousImage()));
@@ -218,7 +218,7 @@ void ctkDICOMAppWidget::setDatabaseDirectory(const QString& directory)
     }
   
   d->DICOMModel.setDatabase(d->DICOMDatabase->database());
-  d->DICOMModel.setDisplayLevel(ctkDICOMModel::SeriesType);
+  d->DICOMModel.setEndLevel(ctkDICOMModel::SeriesType);
   d->TreeView->resizeColumnToContents(0);
 
   //pass DICOM database instance to Import widget
@@ -302,6 +302,47 @@ void ctkDICOMAppWidget::openQueryDialog()
   d->QueryRetrieveWidget->show();
   d->QueryRetrieveWidget->raise();
 
+}
+
+//----------------------------------------------------------------------------
+void ctkDICOMAppWidget::onQueryRetrieveFinished()
+{
+  Q_D(ctkDICOMAppWidget);
+  d->DICOMModel.reset();
+  emit this->queryRetrieveFinished();
+}
+
+//----------------------------------------------------------------------------
+void ctkDICOMAppWidget::onRemoveAction()
+{
+  Q_D(ctkDICOMAppWidget);
+
+  //d->QueryRetrieveWidget->show();
+  // d->QueryRetrieveWidget->raise();
+  std::cout << "on remove" << std::endl;
+  QModelIndexList selection = d->TreeView->selectionModel()->selectedIndexes();
+  std::cout << selection.size() << std::endl;
+  QModelIndex index;
+  foreach(index,selection)
+  {
+    QModelIndex index0 = index.sibling(index.row(), 0);
+    if ( d->DICOMModel.data(index0,ctkDICOMModel::TypeRole) == static_cast<int>(ctkDICOMModel::SeriesType))
+    {
+      QString seriesUID = d->DICOMModel.data(index0,ctkDICOMModel::UIDRole).toString();
+      d->DICOMDatabase->removeSeries(seriesUID);
+    } 
+    else if ( d->DICOMModel.data(index0,ctkDICOMModel::TypeRole) == static_cast<int>(ctkDICOMModel::StudyType))
+    {
+      QString studyUID = d->DICOMModel.data(index0,ctkDICOMModel::UIDRole).toString();
+      d->DICOMDatabase->removeStudy(studyUID);
+    }
+    else if ( d->DICOMModel.data(index0,ctkDICOMModel::TypeRole) == static_cast<int>(ctkDICOMModel::PatientType))
+    {
+      QString patientUID = d->DICOMModel.data(index0,ctkDICOMModel::UIDRole).toString();
+      d->DICOMDatabase->removePatient(patientUID);
+    }
+  }
+  d->DICOMModel.reset();
 }
 
 //----------------------------------------------------------------------------
@@ -427,7 +468,12 @@ Q_D(ctkDICOMAppWidget);
           d->NextStudyButton->hide();
           d->PrevStudyButton->hide();
           }
+        d->ActionRemove->setEnabled(
+            model->data(index0,ctkDICOMModel::TypeRole) == static_cast<int>(ctkDICOMModel::SeriesType) ||
+            model->data(index0,ctkDICOMModel::TypeRole) == static_cast<int>(ctkDICOMModel::StudyType) ||
+            model->data(index0,ctkDICOMModel::TypeRole) == static_cast<int>(ctkDICOMModel::PatientType) );
         }
+
       else
         {
         d->NextImageButton->hide();
@@ -436,6 +482,7 @@ Q_D(ctkDICOMAppWidget);
         d->PrevSeriesButton->hide();
         d->NextStudyButton->hide();
         d->PrevStudyButton->hide();
+        d->ActionRemove->setEnabled(false);
         }
 }
 

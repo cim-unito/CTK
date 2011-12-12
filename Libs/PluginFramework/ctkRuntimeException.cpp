@@ -22,6 +22,8 @@
 
 #include "ctkRuntimeException.h"
 
+#include <QDebug>
+
 //----------------------------------------------------------------------------
 ctkRuntimeException::ctkRuntimeException(const QString& msg, const std::exception* cause)
   : std::runtime_error(msg.toStdString())
@@ -54,7 +56,7 @@ QString ctkRuntimeException::getCause() const
 }
 
 //----------------------------------------------------------------------------
-void ctkRuntimeException::setCause(const QString& cause) throw(std::logic_error)
+void ctkRuntimeException::setCause(const QString& cause)
 {
   if (!this->cause.isEmpty()) throw std::logic_error("The cause for this ctkServiceException instance is already set");
 
@@ -70,4 +72,12 @@ const char* ctkRuntimeException::what() const throw()
   if (!causeMsg.isEmpty()) fullMsg += std::string("\n  Caused by: ") + causeMsg.toStdString();
 
   return fullMsg.c_str();
+}
+
+//----------------------------------------------------------------------------
+QDebug operator<<(QDebug dbg, const ctkRuntimeException& exc)
+{
+  dbg << "ctkRuntimeException:" << exc.what();
+
+  return dbg.maybeSpace();
 }

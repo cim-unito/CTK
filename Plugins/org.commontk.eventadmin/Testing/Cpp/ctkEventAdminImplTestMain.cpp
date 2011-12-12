@@ -22,6 +22,7 @@
 
 #include <QCoreApplication>
 
+#include <ctkConfig.h>
 #include <ctkPluginConstants.h>
 
 #include <Testing/Cpp/ctkPluginFrameworkTestRunner.h>
@@ -39,9 +40,9 @@ int main(int argc, char** argv)
 
   QString pluginDir;
 #ifdef CMAKE_INTDIR
-  pluginDir = qApp->applicationDirPath() + "/../plugins/" CMAKE_INTDIR "/";
+  pluginDir = CTK_PLUGIN_DIR CMAKE_INTDIR "/";
 #else
-  pluginDir = qApp->applicationDirPath() + "/plugins/";
+  pluginDir = CTK_PLUGIN_DIR;
 #endif
 
   QString testpluginDir;
@@ -61,6 +62,8 @@ int main(int argc, char** argv)
   fwProps.insert(ctkPluginConstants::FRAMEWORK_STORAGE_CLEAN, ctkPluginConstants::FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
   fwProps.insert("pluginfw.testDir", testpluginDir);
   fwProps.insert("event.impl", "org.commontk.eventadmin");
+
+  fwProps.insert("org.commontk.eventadmin.ThreadPoolSize", 10);
 
   testRunner.init(fwProps);
   return testRunner.run(argc, argv);

@@ -33,6 +33,7 @@
 class vtkDataSet;
 class vtkDataArray;
 
+/// \ingroup Visualization_VTK_Widgets
 namespace ctkVTK
 {
  enum ItemDataRole {
@@ -43,6 +44,7 @@ namespace ctkVTK
 class ctkVTKDataSetModelPrivate;
 
 //------------------------------------------------------------------------------
+/// \ingroup Visualization_VTK_Widgets
 class CTK_VISUALIZATION_VTK_WIDGETS_EXPORT ctkVTKDataSetModel
   : public QStandardItemModel
 {
@@ -65,7 +67,7 @@ public:
   QStandardItem* itemFromArray(vtkDataArray* dataArray, int column = 0)const;
   QModelIndexList indexes(vtkDataArray* dataArray)const;
 
-protected slots:
+protected Q_SLOTS:
   void onDataSetModified(vtkObject* dataSet);
   void onArrayModified(vtkObject* dataArray);
   void onItemChanged(QStandardItem * item);

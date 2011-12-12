@@ -62,6 +62,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class ctkConsolePrivate;
 class ctkConsoleCompleter;
 
+/// \ingroup Widgets
 /// QWidget that provides an interactive console
 class CTK_WIDGETS_EXPORT ctkConsole : public QWidget
 {
@@ -168,12 +169,12 @@ public:
 
   static QString stdInRedirectCallBack(void * callData);
 
-signals:
+Q_SIGNALS:
 
   /// This signal emitted before and after a command is executed
   void executing(bool);
 
-public slots:
+public Q_SLOTS:
 
   /// Clears the contents of the console
   virtual void clear();

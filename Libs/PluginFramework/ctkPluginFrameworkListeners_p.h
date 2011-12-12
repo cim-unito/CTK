@@ -69,10 +69,12 @@ public:
   /**
    * Gets the slots interested in modifications of the service reference
    *
-   * @param The reference related to the event describing the service modification.
+   * @param sr The reference related to the event describing the service modification.
+   * @param lockProps If access to the properties of the service object referenced by sr
+   *        should be synchronized.
    * @return A set of listeners to notify.
    */
-  QSet<ctkServiceSlotEntry> getMatchingServiceSlots(const ctkServiceReference& sr);
+  QSet<ctkServiceSlotEntry> getMatchingServiceSlots(const ctkServiceReference& sr, bool lockProps = true);
 
   /**
    * Convenience method for throwing framework error event.
@@ -96,14 +98,14 @@ public:
 
   void emitFrameworkEvent(const ctkPluginFrameworkEvent& event);
 
-signals:
+Q_SIGNALS:
 
   void pluginChangedDirect(const ctkPluginEvent& event);
   void pluginChangedQueued(const ctkPluginEvent& event);
 
   void frameworkEvent(const ctkPluginFrameworkEvent& event);
 
-private slots:
+private Q_SLOTS:
 
   void serviceListenerDestroyed(QObject* listener);
 
@@ -142,6 +144,12 @@ private:
    * Add all members of the specified list to the specified set.
    */
   void addToSet(QSet<ctkServiceSlotEntry>& set, int cache_ix, const QString& val);
+
+  /**
+   * The unsynchronized version of removeServiceSlot().
+   */
+  void removeServiceSlot_unlocked(QSharedPointer<ctkPlugin> plugin, QObject* receiver,
+                                  const char* slot);
 };
 
 
