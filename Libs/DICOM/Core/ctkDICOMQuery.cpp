@@ -76,6 +76,7 @@ public:
         emit this->query->debug("Got a find response!");
         return this->ctkDcmSCU::handleFINDResponse(presID, response, waitForNextResponse);
         }
+      return DIMSE_NULLKEY;
     };
 };
 
@@ -93,6 +94,7 @@ public:
   QString                 CalledAETitle;
   QString                 Host;
   int                     Port;
+  bool                    PreferCGET;
   QMap<QString,QVariant>  Filters;
   ctkDICOMQuerySCUPrivate SCU;
   DcmDataset*             Query;
@@ -197,6 +199,20 @@ int ctkDICOMQuery::port()const
 {
   Q_D(const ctkDICOMQuery);
   return d->Port;
+}
+
+//------------------------------------------------------------------------------
+void ctkDICOMQuery::setPreferCGET ( bool preferCGET )
+{
+  Q_D(ctkDICOMQuery);
+  d->PreferCGET = preferCGET;
+}
+
+//------------------------------------------------------------------------------
+bool ctkDICOMQuery::preferCGET()const
+{
+  Q_D(const ctkDICOMQuery);
+  return d->PreferCGET;
 }
 
 //------------------------------------------------------------------------------

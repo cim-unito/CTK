@@ -20,7 +20,6 @@ set(TEST_SOURCES
   ctkColorPickerButtonTest1.cpp
   ctkComboBoxTest1.cpp
   ctkCompleterTest1.cpp
-  ctkConfirmExitDialogTest1.cpp
   ctkConsoleTest1.cpp
   ctkCoordinatesWidgetTest1.cpp
   ctkCrosshairLabelTest1.cpp
@@ -48,6 +47,7 @@ set(TEST_SOURCES
   ctkMenuComboBoxTest1.cpp
   ctkMenuComboBoxTest2.cpp
   ctkMenuComboBoxTest3.cpp
+  ctkMessageBoxDontShowAgainTest.cpp
   ctkModalityWidgetTest1.cpp
   ctkPathLineEditTest1.cpp
   ctkPopupWidgetTest1.cpp
@@ -118,8 +118,9 @@ set(Tests_MOC_SRCS
 set(Tests_MOC_CPP)
 QT4_WRAP_CPP(Tests_MOC_CPP ${Tests_MOC_SRCS})
 QT4_GENERATE_MOCS(
-  ctkRangeSliderTest.cpp
   ctkFlatProxyModelTest.cpp
+  ctkMessageBoxDontShowAgainTest.cpp
+  ctkRangeSliderTest.cpp
   )
 
 add_executable(${KIT}CppTests ${Tests} ${Tests_SRCS} ${Tests_MOC_CPP})
@@ -148,7 +149,6 @@ SIMPLE_TEST( ctkColorDialogTest2 )
 SIMPLE_TEST( ctkColorPickerButtonTest1 )
 SIMPLE_TEST( ctkComboBoxTest1 )
 SIMPLE_TEST( ctkCompleterTest1 )
-SIMPLE_TEST( ctkConfirmExitDialogTest1 )
 SIMPLE_TEST( ctkConsoleTest1 )
 SIMPLE_TEST( ctkCoordinatesWidgetTest1 )
 SIMPLE_TEST( ctkCrosshairLabelTest1 )
@@ -179,6 +179,7 @@ SIMPLE_TEST( ctkMenuButtonTest1 )
 SIMPLE_TEST( ctkMenuComboBoxTest1 )
 SIMPLE_TEST( ctkMenuComboBoxTest2 )
 SIMPLE_TEST( ctkMenuComboBoxTest3 )
+SIMPLE_TEST( ctkMessageBoxDontShowAgainTest )
 SIMPLE_TEST( ctkModalityWidgetTest1 )
 SIMPLE_TEST( ctkPathLineEditTest1 )
 SIMPLE_TEST( ctkPopupWidgetTest1 )

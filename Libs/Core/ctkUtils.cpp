@@ -314,3 +314,13 @@ QString ctk::qtHandleToString(Qt::HANDLE handle)
   s << handle;
   return str;
 }
+
+//-----------------------------------------------------------------------------
+qint64 ctk::msecsTo(const QDateTime& t1, const QDateTime& t2)
+{
+  QDateTime utcT1 = t1.toUTC();
+  QDateTime utcT2 = t2.toUTC();
+
+  return static_cast<qint64>(utcT1.daysTo(utcT2)) * static_cast<qint64>(1000*3600*24)
+      + static_cast<qint64>(utcT1.time().msecsTo(utcT2.time()));
+}

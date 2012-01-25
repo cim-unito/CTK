@@ -270,7 +270,6 @@ void ctkDICOMQueryRetrieveWidget::retrieve()
   retrieve->setKeepAssociationOpen(true);
   // pull from GUI
   retrieve->setMoveDestinationAETitle( serverParameters["StorageAETitle"].toString() );
-  int step = 0;
 
   // do the rerieval for each selected series
   foreach( QString studyUID, d->QueriesByStudyUID.keys() )
@@ -304,9 +303,14 @@ void ctkDICOMQueryRetrieveWidget::retrieve()
     try
       {
       // perform the retrieve
-      // TODO: give the option to use MOVE instead of CGET
-      //retrieve->moveStudy ( studyUID );
-      retrieve->getStudy ( studyUID );
+      if ( query->preferCGET() )
+        {
+        retrieve->getStudy ( studyUID );
+        }
+      else
+        {
+        retrieve->moveStudy ( studyUID );
+        }
       }
     catch (std::exception e)
       {

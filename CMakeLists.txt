@@ -184,6 +184,7 @@ include(CMake/ctkMacroBuildLib.cmake)
 include(CMake/ctkMacroBuildLibWrapper.cmake)
 include(CMake/ctkMacroBuildPlugin.cmake)
 include(CMake/ctkMacroBuildApp.cmake)
+include(CMake/ctkMacroBuildQtPlugin.cmake)
 include(CMake/ctkMacroCompilePythonScript.cmake)
 include(CMake/ctkMacroWrapPythonQt.cmake)
 include(CMake/ctkMacroSetupQt.cmake)
@@ -414,9 +415,6 @@ mark_as_advanced(CTK_USE_KWSTYLE)
 # Qt Designer Plugins
 option(CTK_BUILD_QTDESIGNER_PLUGINS "Build Qt Designer plugins" ON)
 mark_as_advanced(CTK_BUILD_QTDESIGNER_PLUGINS)
-if(CTK_BUILD_QTDESIGNER_PLUGINS)
-  include(CMake/ctkMacroBuildQtDesignerPlugin.cmake)
-endif()
 
 #-----------------------------------------------------------------------------
 # CTK Libraries
@@ -827,9 +825,7 @@ set(CTK_EXPORT_HEADER_TEMPLATE "${CTK_SOURCE_DIR}/Libs/ctkExport.h.in")
 #-----------------------------------------------------------------------------
 # Setup testing environment before Libs are added
 #
-if(BUILD_TESTING)
-  add_subdirectory(Libs/Testing)
-endif()
+add_subdirectory(Libs/Testing)
 
 #-----------------------------------------------------------------------------
 # Add CTK library subdirectories

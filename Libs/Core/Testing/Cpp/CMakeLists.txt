@@ -22,6 +22,7 @@ set(KITTests_SRCS
   ctkAbstractObjectFactoryTest1.cpp
   ctkAbstractPluginFactoryTest1.cpp
   ctkAbstractQObjectFactoryTest1.cpp
+  ctkBooleanMapperTest.cpp
   ctkCallbackTest1.cpp
   ctkCheckableModelHelperTest1.cpp
   ctkCommandLineParserTest1.cpp
@@ -63,6 +64,11 @@ if(HAVE_BFD)
     )
 endif()
 
+include_directories(
+  ${CMAKE_SOURCE_DIR}/Libs/Testing
+  ${CMAKE_CURRENT_BINARY_DIR}
+  )
+
 create_test_sourcelist(Tests ${KIT}CppTests.cpp
   ${KITTests_SRCS}
   #EXTRA_INCLUDE TestingMacros.h
@@ -92,6 +98,9 @@ set(Tests_Helpers_MOC_SRCS
 
 set(Tests_Helpers_MOC_CPP)
 QT4_WRAP_CPP(Tests_Helpers_MOC_CPP ${Tests_Helpers_MOC_SRCS})
+QT4_GENERATE_MOCS(
+  ctkBooleanMapperTest.cpp
+  )
 
 if(HAVE_BFD)
   add_executable(ctkBinaryFileDescriptorTestHelper ctkBinaryFileDescriptorTestHelper.cpp)
@@ -119,6 +128,7 @@ SIMPLE_TEST( ctkAbstractQObjectFactoryTest1 )
 if(HAVE_BFD)
   SIMPLE_TEST( ctkBinaryFileDescriptorTest1 $<TARGET_FILE:ctkBinaryFileDescriptorTestHelper> )
 endif()
+SIMPLE_TEST( ctkBooleanMapperTest )
 SIMPLE_TEST( ctkCallbackTest1 )
 SIMPLE_TEST( ctkCheckableModelHelperTest1 )
 SIMPLE_TEST( ctkCommandLineParserTest1 )

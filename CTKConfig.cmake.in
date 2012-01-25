@@ -53,6 +53,7 @@ INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroSetPaths.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroListFilter.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroBuildLibWrapper.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroBuildPlugin.cmake")
+INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroBuildQtPlugin.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroTargetLibraries.cmake") # Import multiple macros
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionExtractOptionNameAndValue.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroValidateBuildOptions.cmake")
@@ -67,6 +68,7 @@ INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetAllPluginTargets.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetTargetDependencies.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkFunctionGetPluginDependencies.cmake")
 INCLUDE("@CTK_CMAKE_DIR_CONFIG@/ctkMacroSetupPlugins.cmake")
+INCLUDE("@CTKTesting_CMAKE_DIR_CONFIG@/ctkMacroGenerateMocs.cmake")
 
 SET(CTK_EXPORT_HEADER_TEMPLATE "@CTK_EXPORT_HEADER_TEMPLATE@")
 
@@ -163,6 +165,7 @@ SET(CTK_CMAKE_UTILITIES_DIR "@CTK_CMAKE_UTILITIES_DIR_CONFIG@")
 SET(CTK_INSTALL_BIN_DIR "@CTK_INSTALL_BIN_DIR@")
 SET(CTK_INSTALL_INCLUDE_DIR "@CTK_INSTALL_INCLUDE_DIR@")
 SET(CTK_INSTALL_LIB_DIR "@CTK_INSTALL_LIB_DIR@")
+SET(CTK_INSTALL_QTPLUGIN_DIR "@CTK_INSTALL_QTPLUGIN_DIR@")
 #SET(CTK_INSTALL_PACKAGE_DIR "@CTK_INSTALL_PACKAGE_DIR@")
 
 # A CTK install tree always provides one build configuration. A CTK

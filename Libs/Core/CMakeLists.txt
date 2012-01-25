@@ -30,6 +30,8 @@ set(KIT_SRCS
   ctkAbstractQObjectFactory.tpp
   ctkAbstractLibraryFactory.h
   ctkAbstractLibraryFactory.tpp
+  ctkBooleanMapper.cpp
+  ctkBooleanMapper.h
   ctkCallback.cpp
   ctkCallback.h
   ctkCheckableModelHelper.cpp
@@ -81,6 +83,7 @@ endif()
 
 # Headers that should run through moc
 set(KIT_MOC_SRCS
+  ctkBooleanMapper.h
   ctkCallback.h
   ctkCheckableModelHelper.h
   ctkCommandLineParser.h
