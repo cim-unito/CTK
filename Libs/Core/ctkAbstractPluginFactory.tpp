@@ -52,7 +52,7 @@ bool ctkFactoryPluginItem<BaseClassType>::load()
 //----------------------------------------------------------------------------
 template<typename BaseClassType>
 QString ctkFactoryPluginItem<BaseClassType>::loadErrorString()const
-{ 
+{
   return this->Loader.errorString();
 }
 
