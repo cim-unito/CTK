@@ -31,11 +31,13 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QPixmap>
-
+#include <QtConcurrentRun>
 
 // ctkDICOM includes
 #include "ctkLogger.h"
 #include "ctkDICOMIndexer.h"
+#include "ctkDICOMIndexer_p.h"
+#include "ctkDICOMDatabase.h"
 
 // DCMTK includes
 #include <dcmtk/dcmdata/dcfilefo.h>
@@ -49,35 +51,62 @@
 #include <dcmtk/dcmimgle/dcmimage.h>  /* for class DicomImage */
 #include <dcmtk/dcmimage/diregist.h>  /* include support for color images */
 
+class AddFileFunctor
+{
+public:
+     AddFileFunctor(ctkDICOMIndexer* indexer, ctkDICOMDatabase& database,
+                    const QString& destinationDirectoryName = "")
+       : Indexer(indexer), Database(database), DestinationDirectoryName(destinationDirectoryName) { }
+
+     bool operator()(const QString &filePath)
+     {
+         Indexer->addFile(Database,filePath,DestinationDirectoryName);
+         return false; // make sure it is removed;
+     }
+
+     ctkDICOMIndexer* Indexer;
+     ctkDICOMDatabase& Database;
+     QString DestinationDirectoryName;
+
+ };
+
 
 //------------------------------------------------------------------------------
 static ctkLogger logger("org.commontk.dicom.DICOMIndexer" );
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-class ctkDICOMIndexerPrivate
-{
-public:
-  ctkDICOMIndexerPrivate();
-  ~ctkDICOMIndexerPrivate();
-
-  ctkDICOMAbstractThumbnailGenerator* thumbnailGenerator;
-  bool                    Canceled;
-
-};
 
 //------------------------------------------------------------------------------
 // ctkDICOMIndexerPrivate methods
 
 //------------------------------------------------------------------------------
-ctkDICOMIndexerPrivate::ctkDICOMIndexerPrivate()
+ctkDICOMIndexerPrivate::ctkDICOMIndexerPrivate(ctkDICOMIndexer& o) : q_ptr(&o), Canceled(false), CurrentPercentageProgress(-1)
 {
-  this->Canceled = false;
+  Q_Q(ctkDICOMIndexer);
+  connect(&DirectoryImportWatcher,SIGNAL(progressValueChanged(int)),this,SLOT(OnProgress(int)));
+  connect(&DirectoryImportWatcher,SIGNAL(finished()),q,SIGNAL(indexingComplete()));
+  connect(&DirectoryImportWatcher,SIGNAL(canceled()),q,SIGNAL(indexingComplete()));
 }
 
 //------------------------------------------------------------------------------
 ctkDICOMIndexerPrivate::~ctkDICOMIndexerPrivate()
 {
+  DirectoryImportWatcher.cancel();
+  DirectoryImportWatcher.waitForFinished();
+
+}
+
+void ctkDICOMIndexerPrivate::OnProgress(int)
+{
+  Q_Q(ctkDICOMIndexer);
+
+  int newPercentageProgress = ( 100 * DirectoryImportFuture.progressValue() ) / DirectoryImportFuture.progressMaximum();
+  if (newPercentageProgress != CurrentPercentageProgress)
+    {
+      CurrentPercentageProgress = newPercentageProgress;
+      emit q->progress(newPercentageProgress);
+    }
+
 }
 
 //------------------------------------------------------------------------------
@@ -86,7 +115,7 @@ ctkDICOMIndexerPrivate::~ctkDICOMIndexerPrivate()
 // ctkDICOMIndexer methods
 
 //------------------------------------------------------------------------------
-ctkDICOMIndexer::ctkDICOMIndexer(QObject *parent):d_ptr(new ctkDICOMIndexerPrivate)
+ctkDICOMIndexer::ctkDICOMIndexer(QObject *parent):d_ptr(new ctkDICOMIndexerPrivate(*this))
 {
   Q_UNUSED(parent);
 }
@@ -97,10 +126,11 @@ ctkDICOMIndexer::~ctkDICOMIndexer()
 }
 
 //------------------------------------------------------------------------------
-void ctkDICOMIndexer::addFile(ctkDICOMDatabase& ctkDICOMDatabase, 
-                                   const QString& filePath,
+void ctkDICOMIndexer::addFile(ctkDICOMDatabase& database,
+                                   const QString filePath,
                                    const QString& destinationDirectoryName)
 {
+  std::cout << filePath.toStdString();
   if (!destinationDirectoryName.isEmpty())
   {
     logger.warn("Ignoring destinationDirectoryName parameter, just taking it as indication we should copy!");
@@ -108,7 +138,7 @@ void ctkDICOMIndexer::addFile(ctkDICOMDatabase& ctkDICOMDatabase,
 
   emit indexingFilePath(filePath);
 
-  ctkDICOMDatabase.insert(filePath, !destinationDirectoryName.isEmpty(), true);
+  database.insert(filePath, !destinationDirectoryName.isEmpty(), true);
 }
 
 //------------------------------------------------------------------------------
@@ -118,48 +148,110 @@ void ctkDICOMIndexer::addDirectory(ctkDICOMDatabase& ctkDICOMDatabase,
 {
   Q_D(ctkDICOMIndexer);
 
-  const std::string src_directory(directoryName.toStdString());
+  QStringList listOfFiles;
+  QDir directory(directoryName);
 
-  OFList<OFString> originalDcmtkFileNames;
-  OFList<OFString> dcmtkFileNames;
-  OFStandard::searchDirectoryRecursively( QDir::toNativeSeparators(src_directory.c_str()).toAscii().data(), originalDcmtkFileNames, "", "");
-
-  int totalNumberOfFiles = originalDcmtkFileNames.size();
-
-  // hack to reverse list of filenames (not neccessary when image loading works correctly)
-  for ( OFListIterator(OFString) iter = originalDcmtkFileNames.begin(); iter != originalDcmtkFileNames.end(); ++iter )
+  if(directory.exists("DICOMDIR"))
   {
-    dcmtkFileNames.push_front( *iter );
+    addDicomdir(ctkDICOMDatabase,directoryName,destinationDirectoryName);
   }
-
-  OFListIterator(OFString) iter = dcmtkFileNames.begin();
-
-  OFListIterator(OFString) last = dcmtkFileNames.end();
-
-  if(iter == last) return;
-
-  emit foundFilesToIndex(totalNumberOfFiles);
-
-  /* iterate over all input filenames */
-  int fileNumber = 0;
-  int currentProgress = -1;
-  d->Canceled = false;
-  while (iter != last)
+  else
   {
-    if (d->Canceled)
-      {
-      break;
-      }
-    emit indexingFileNumber(++fileNumber);
-    int newProgress = ( fileNumber * 100 ) / totalNumberOfFiles;
-    if (newProgress != currentProgress)
+    QDirIterator it(directoryName,QDir::Files,QDirIterator::Subdirectories);
+    while(it.hasNext())
     {
-      currentProgress = newProgress;
-      emit progress( currentProgress );
+      listOfFiles << it.next();
     }
-    QString filePath((*iter).c_str());
-    this->addFile(ctkDICOMDatabase, filePath, destinationDirectoryName);
-    ++iter;
+    emit foundFilesToIndex(listOfFiles.count());
+    addListOfFiles(ctkDICOMDatabase,listOfFiles,destinationDirectoryName);
+  }
+}
+
+//------------------------------------------------------------------------------
+void ctkDICOMIndexer::addListOfFiles(ctkDICOMDatabase& ctkDICOMDatabase,
+                                     const QStringList& listOfFiles,
+                                     const QString& destinationDirectoryName)
+{
+  Q_D(ctkDICOMIndexer);
+  if(!listOfFiles.isEmpty())
+  {
+    if(d->DirectoryImportWatcher.isRunning())
+    {
+      d->DirectoryImportWatcher.cancel();
+      d->DirectoryImportWatcher.waitForFinished();
+    }
+    d->FilesToIndex.append(listOfFiles);
+    d->DirectoryImportFuture = QtConcurrent::filter(d->FilesToIndex,AddFileFunctor(this,ctkDICOMDatabase,destinationDirectoryName));
+    d->DirectoryImportWatcher.setFuture(d->DirectoryImportFuture);
+  }
+}
+
+//------------------------------------------------------------------------------
+void ctkDICOMIndexer::addDicomdir(ctkDICOMDatabase& ctkDICOMDatabase,
+                 const QString& directoryName,
+                 const QString& destinationDirectoryName
+                 )
+{
+  Q_D(ctkDICOMIndexer);
+
+  //Initialize dicomdir with directory path
+  QString dcmFilePath = directoryName;
+  dcmFilePath.append("/DICOMDIR");
+  DcmDicomDir* dicomDir = new DcmDicomDir(dcmFilePath.toStdString().c_str());
+
+  //Values to store records data at the moment only uid needed
+  OFString patientsName, studyInstanceUID, seriesInstanceUID, sopInstanceUID, referencedFileName ;
+
+  //Variables for progress operations
+  QString instanceFilePath;
+  QStringList listOfInstances;
+
+  DcmDirectoryRecord* rootRecord = &(dicomDir->getRootRecord());
+  DcmDirectoryRecord* patientRecord = NULL;
+  DcmDirectoryRecord* studyRecord = NULL;
+  DcmDirectoryRecord* seriesRecord = NULL;
+  DcmDirectoryRecord* fileRecord = NULL;
+
+  /*Iterate over all records in dicomdir and setup path to the dataset of the filerecord
+  then insert. the filerecord into the database.
+  If any UID is missing the record and all of it's subelements won't be added to the database*/
+  if(rootRecord != NULL)
+  {
+    while (((patientRecord = rootRecord->nextSub(patientRecord)) != NULL)
+      &&(patientRecord->findAndGetOFString(DCM_PatientName, patientsName).good()))
+    {
+      logger.debug( "Reading new Patients:" );
+      logger.debug( "Patient's Name: " + QString(patientsName.c_str()) );
+
+      while (((studyRecord = patientRecord->nextSub(studyRecord)) != NULL)
+        && (studyRecord->findAndGetOFString(DCM_StudyInstanceUID, studyInstanceUID).good()))
+      {
+        logger.debug( "Reading new Studys:" );
+        logger.debug( "Studies Name: " + QString(studyInstanceUID.c_str()) );
+
+        while (((seriesRecord = studyRecord->nextSub(seriesRecord)) != NULL)
+          &&(seriesRecord->findAndGetOFString(DCM_SeriesInstanceUID, seriesInstanceUID).good()))
+        {
+          logger.debug( "Reading new Series:" );
+          logger.debug( "Series Instance Name: " + QString(seriesInstanceUID.c_str()) );
+
+          while (((fileRecord = seriesRecord->nextSub(fileRecord)) != NULL)
+            &&(fileRecord->findAndGetOFStringArray(DCM_ReferencedSOPInstanceUIDInFile, sopInstanceUID).good())
+            &&(fileRecord->findAndGetOFStringArray(DCM_ReferencedFileID,referencedFileName).good()))
+          {
+
+            //Get the filepath of the instance and insert it into a list
+            instanceFilePath = directoryName;
+            instanceFilePath.append("/");
+            instanceFilePath.append(QString( referencedFileName.c_str() ));
+            instanceFilePath.replace("\\","/");
+            listOfInstances << instanceFilePath;
+          }
+        }
+      }
+    }
+    emit foundFilesToIndex(listOfInstances.count());
+    addListOfFiles(ctkDICOMDatabase,listOfInstances,destinationDirectoryName);
   }
 }
 
@@ -172,7 +264,6 @@ void ctkDICOMIndexer::refreshDatabase(ctkDICOMDatabase& dicomDatabase, const QSt
    * Probably this should go to the database class as well
    * Or we have to extend the interface to make possible what we do here
    * without using SQL directly
-   
 
   /// get all filenames from the database
   QSqlQuery allFilesQuery(dicomDatabase.database());
@@ -205,8 +296,15 @@ void ctkDICOMIndexer::refreshDatabase(ctkDICOMDatabase& dicomDatabase, const QSt
   }
 
 //----------------------------------------------------------------------------
+void ctkDICOMIndexer::waitForImportFinished()
+{
+  Q_D(ctkDICOMIndexer);
+  d->DirectoryImportWatcher.waitForFinished();
+}
+
+//----------------------------------------------------------------------------
 void ctkDICOMIndexer::cancel()
 {
   Q_D(ctkDICOMIndexer);
-  d->Canceled = true;
+  d->DirectoryImportWatcher.cancel();
 }

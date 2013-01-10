@@ -19,15 +19,15 @@
 
 =============================================================================*/
 
-#include "ctkServiceReference.h"
-#include "ctkServiceReferencePrivate.h"
-#include "ctkServiceRegistrationPrivate.h"
-#include "ctkPluginPrivate_p.h"
-#include "ctkPluginConstants.h"
-
 #include <QStringList>
 #include <QMutexLocker>
 #include <QDebug>
+
+#include "ctkPlugin_p.h"
+#include "ctkPluginConstants.h"
+#include "ctkServiceReference.h"
+#include "ctkServiceReference_p.h"
+#include "ctkServiceRegistration_p.h"
 
 //----------------------------------------------------------------------------
 ctkServiceReference::ctkServiceReference()
@@ -127,9 +127,9 @@ bool ctkServiceReference::operator<(const ctkServiceReference& reference) const
   bool sameFw = d_func()->registration->plugin->fwCtx == reference.d_func()->registration->plugin->fwCtx;
   if (!sameFw)
   {
-    throw std::invalid_argument("Can not compare service references "
-                                "belonging to different framework "
-                                "instances.");
+    throw ctkInvalidArgumentException("Can not compare service references "
+                                      "belonging to different framework "
+                                      "instances.");
   }
 
   int r1 = getProperty(ctkPluginConstants::SERVICE_RANKING).toInt();

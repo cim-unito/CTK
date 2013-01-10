@@ -47,7 +47,7 @@ public:
   virtual ~ctkLayoutManager();
 
   void setViewport(QWidget* widget);
-  QWidget* viewport()const;
+  Q_INVOKABLE QWidget* viewport()const;
 
   int spacing()const;
   void setSpacing(int spacing);
@@ -65,7 +65,7 @@ protected:
 
   virtual void onViewportChanged();
   void clearLayout();
-  void setupLayout();
+  virtual void setupLayout();
 
   virtual void setLayout(const QDomDocument& newLayout);
   const QDomDocument layout()const;

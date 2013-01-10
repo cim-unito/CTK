@@ -23,7 +23,7 @@ if(${add_project})
   if(CTK_SUPERBUILD)
 
     if(NOT DEFINED DCMTK_DIR)
-      set(revision_tag 085525e643cab5ac82)
+      set(revision_tag ae3b946f6e6231)
       if(${proj}_REVISION_TAG)
         set(revision_tag ${${proj}_REVISION_TAG})
       endif()
@@ -38,6 +38,12 @@ if(${add_project})
         set(location_args GIT_REPOSITORY "${git_protocol}://git.dcmtk.org/dcmtk.git"
                           GIT_TAG ${revision_tag})
       endif()
+      
+      set(ep_project_include_arg)
+      if(CTEST_USE_LAUNCHERS)
+        set(ep_project_include_arg
+          "-DCMAKE_PROJECT_DCMTK_INCLUDE:FILEPATH=${CMAKE_ROOT}/Modules/CTestUseLaunchers.cmake")
+      endif()
 
       #message(STATUS "Adding project:${proj}")
       ExternalProject_Add(${proj}
@@ -48,13 +54,20 @@ if(${add_project})
         CMAKE_GENERATOR ${gen}
         UPDATE_COMMAND ""
         BUILD_COMMAND ""
+        CMAKE_ARGS
+          -DDCMTK_INSTALL_BINDIR:STRING=bin/${CMAKE_CFG_INTDIR}
+          -DDCMTK_INSTALL_LIBDIR:STRING=lib/${CMAKE_CFG_INTDIR}
         CMAKE_CACHE_ARGS
           ${ep_common_cache_args}
+          ${ep_project_include_arg}
+          -DBUILD_SHARED_LIBS:BOOL=OFF
+          -DDCMTK_WITH_DOXYGEN:BOOL=OFF
           -DDCMTK_WITH_ZLIB:BOOL=OFF # see github issue #25
           -DDCMTK_WITH_OPENSSL:BOOL=OFF # see github issue #25
           -DDCMTK_WITH_PNG:BOOL=OFF # see github issue #25
           -DDCMTK_WITH_TIFF:BOOL=OFF  # see github issue #25
           -DDCMTK_WITH_XML:BOOL=OFF  # see github issue #25
+          -DDCMTK_WITH_ICONV:BOOL=OFF  # see github issue #178
           -DDCMTK_FORCE_FPIC_ON_UNIX:BOOL=ON
           -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS:BOOL=OFF
         )

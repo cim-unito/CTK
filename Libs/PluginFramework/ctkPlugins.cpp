@@ -19,18 +19,17 @@
 
 =============================================================================*/
 
-#include "ctkPlugins_p.h"
+#include <QUrl>
 
-#include "ctkPluginPrivate_p.h"
+#include "ctkPlugin_p.h"
 #include "ctkPluginArchive_p.h"
 #include "ctkPluginException.h"
 #include "ctkPluginFrameworkContext_p.h"
+#include "ctkPlugins_p.h"
 #include "ctkVersionRange_p.h"
 
 #include <stdexcept>
 #include <iostream>
-
-#include <QUrl>
 
 //----------------------------------------------------------------------------
 void ctkPlugins::checkIllegalState() const
@@ -105,7 +104,7 @@ QSharedPointer<ctkPlugin> ctkPlugins::install(const QUrl& location, QIODevice* i
 
         if (location.scheme() != "file")
         {
-          throw std::runtime_error(std::string("Unsupported url scheme: ") + qPrintable(location.scheme()));
+          throw ctkRuntimeException(QString("Unsupported url scheme: ") + location.scheme());
         }
         else
         {
@@ -123,7 +122,7 @@ QSharedPointer<ctkPlugin> ctkPlugins::install(const QUrl& location, QIODevice* i
       res->init(res, fwCtx, pa);
       plugins.insert(location.toString(), res);
     }
-    catch (const std::exception& e)
+    catch (const ctkException& e)
     {
       if (!pa.isNull())
       {
@@ -134,9 +133,13 @@ QSharedPointer<ctkPlugin> ctkPlugins::install(const QUrl& location, QIODevice* i
       //      }
       //      else
       //      {
-      throw ctkPluginException(QString("Failed to install plugin: ") + QString(e.what()),
-                               ctkPluginException::UNSPECIFIED, &e);
+      throw ctkPluginException("Failed to install plugin",
+                               ctkPluginException::UNSPECIFIED, e);
       //      }
+    }
+    catch (...)
+    {
+      throw ctkPluginException("Failed to install plugin", ctkPluginException::UNSPECIFIED);
     }
   }
 

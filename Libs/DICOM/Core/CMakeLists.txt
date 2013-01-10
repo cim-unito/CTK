@@ -7,6 +7,23 @@ project(CTKDICOMCore)
 set(KIT_export_directive "CTK_DICOM_CORE_EXPORT")
 
 
+# determine the DCMTK version we're using
+if(EXISTS ${DCMTK_config_INCLUDE_DIR}/cfunix.h)
+  set(_DCMTK_CONFIG_HEADER ${DCMTK_config_INCLUDE_DIR}/cfunix.h)
+elseif(EXISTS ${DCMTK_config_INCLUDE_DIR}/osconfig.h)
+  set(_DCMTK_CONFIG_HEADER ${DCMTK_config_INCLUDE_DIR}/osconfig.h)
+else()
+  message(SEND_ERROR "DCMTK version cannot be determined!")
+endif()
+
+
+file(READ ${_DCMTK_CONFIG_HEADER} _DCMTK_CONFIG)
+# simple check, we do not expect anything else
+if(_DCMTK_CONFIG MATCHES "PACKAGE_VERSION_NUMBER 360")
+  set(DCMTK_VERSION_IS_360 1)
+  message(STATUS "Detected DCMTK 3.6.0, will include backported SCU")
+endif()
+
 # Source files
 set(KIT_SRCS
   ctkDICOMAbstractThumbnailGenerator.cpp
@@ -19,6 +36,7 @@ set(KIT_SRCS
   ctkDICOMFilterProxyModel.h
   ctkDICOMIndexer.cpp
   ctkDICOMIndexer.h
+  ctkDICOMIndexer_p.h
   ctkDICOMModel.cpp
   ctkDICOMModel.h
   ctkDICOMPersonName.cpp
@@ -29,12 +47,12 @@ set(KIT_SRCS
   ctkDICOMRetrieve.h
   ctkDICOMTester.cpp
   ctkDICOMTester.h
-  # enhanced DcmSCU class - to be removed when
-  # corresponding functionality is in a 
-  # DCMKT release - see notes in header file.
-  ctkDcmSCU.cc
-
 )
+
+if(DCMTK_VERSION_IS_360)
+  list(APPEND KIT_SRCS ctkDcmSCU.cc)
+endif(DCMTK_VERSION_IS_360)
+
 
 # Abstract class should not be wrapped !
 set_source_files_properties(
@@ -47,6 +65,7 @@ set(KIT_MOC_SRCS
   ctkDICOMAbstractThumbnailGenerator.h
   ctkDICOMDatabase.h
   ctkDICOMIndexer.h
+  ctkDICOMIndexer_p.h
   ctkDICOMFilterProxyModel.h
   ctkDICOMModel.h
   ctkDICOMQuery.h

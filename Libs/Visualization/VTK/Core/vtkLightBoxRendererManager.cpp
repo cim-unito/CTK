@@ -59,6 +59,7 @@ class RenderWindowItem
 public:
   RenderWindowItem(const double rendererBackgroundColor[3], const double highlightedBoxColor[3],
                    double colorWindow, double colorLevel);
+  ~RenderWindowItem();
   void SetViewport(double xMin, double yMin, double viewportWidth, double viewportHeight);
 
   /// Create the actor supporing the image mapper
@@ -92,6 +93,12 @@ RenderWindowItem::RenderWindowItem(const double rendererBackgroundColor[3],
 
   this->SetupImageMapperActor(colorWindow, colorLevel);
   this->SetupHighlightedBoxActor(highlightedBoxColor);
+}
+
+//-----------------------------------------------------------------------------
+RenderWindowItem::~RenderWindowItem()
+{
+  this->ImageMapper->SetInput(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -182,7 +189,9 @@ void RenderWindowItem::SetupHighlightedBoxActor(const double highlightedBoxColor
   vtkNew<vtkPolyDataMapper2D> polyDataMapper;
   polyDataMapper->SetInput(poly.GetPointer());
   polyDataMapper->SetTransformCoordinate(coordinate.GetPointer());
-  polyDataMapper->SetTransformCoordinateUseDouble(true);
+  #if ! (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION == 8)
+    polyDataMapper->SetTransformCoordinateUseDouble(true);
+  #endif
 
   this->HighlightedBoxActor = vtkSmartPointer<vtkActor2D>::New();
   this->HighlightedBoxActor->SetMapper(polyDataMapper.GetPointer());
@@ -606,8 +615,6 @@ void vtkLightBoxRendererManager::SetRenderWindowLayout(int rowCount, int columnC
     - static_cast<int>(this->Internal->RenderWindowItemList.size());
   if (extraItem > 0)
     {
-    //std::cout << "Creating " << extraItem << " RenderWindowItem";
-
     // Create extra RenderWindowItem(s)
     while(extraItem > 0)
       {
@@ -623,8 +630,6 @@ void vtkLightBoxRendererManager::SetRenderWindowLayout(int rowCount, int columnC
     }
   else
     {
-    //std::cout << "Removing " << extraItem << " RenderWindowItem";
-
     // Remove extra RenderWindowItem(s)
     extraItem = extraItem >= 0 ? extraItem : -extraItem; // Compute Abs
     while(extraItem > 0)

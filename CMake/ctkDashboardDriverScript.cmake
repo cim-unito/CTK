@@ -34,7 +34,6 @@ set(expected_variables
   CTEST_NOTES_FILES
   CTEST_SITE
   CTEST_DASHBOARD_ROOT
-  CTEST_CMAKE_COMMAND
   CTEST_CMAKE_GENERATOR
   WITH_MEMCHECK
   WITH_COVERAGE
@@ -98,10 +97,11 @@ endif()
 #message("force_build:${force_build}")
 
 # For more details, see http://www.kitware.com/blog/home/post/11
-set(CTEST_USE_LAUNCHERS 0)
-#if (NOT ${CTEST_CMAKE_GENERATOR} MATCHES "Visual Studio")
-#  set(CTEST_USE_LAUNCHERS 1)
-#endif()
+set(CTEST_USE_LAUNCHERS 1)
+if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "Make")
+  set(CTEST_USE_LAUNCHERS 0)
+endif()
+set(ENV{CTEST_USE_LAUNCHERS_DEFAULT} ${CTEST_USE_LAUNCHERS})
 
 if(empty_binary_directory)
   message("Directory ${CTEST_BINARY_DIRECTORY} cleaned !")
@@ -128,7 +128,6 @@ macro(run_ctest)
 
     # Write initial cache.
     file(WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
-CTEST_USE_LAUNCHERS:BOOL=${CTEST_USE_LAUNCHERS}
 QT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
 SUPERBUILD_EXCLUDE_CTKBUILD_TARGET:BOOL=TRUE
 WITH_COVERAGE:BOOL=${WITH_COVERAGE}
@@ -278,7 +277,7 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
 endmacro()
 
 if(SCRIPT_MODE STREQUAL "continuous")
-  while(${CTEST_ELAPSED_TIME} LESS 68400)
+  while(${CTEST_ELAPSED_TIME} LESS 46800) # Lasts 13 hours (Assuming it starts at 9am, it will end around 10pm)
     set(START_TIME ${CTEST_ELAPSED_TIME})
     run_ctest()
     # Loop no faster than once every 5 minutes

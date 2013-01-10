@@ -29,6 +29,7 @@
 // DCMTK includes
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
+#include "ctkDcmSCU.h"
 
 #include <dcmtk/dcmdata/dcfilefo.h>
 #include <dcmtk/dcmdata/dcfilefo.h>
@@ -44,11 +45,6 @@
 #include <dcmtk/dcmdata/dcrledrg.h>  /* for DcmRLEDecoderRegistration */
 #include <dcmtk/dcmdata/dcrleerg.h>  /* for DcmRLEEncoderRegistration */
 
-// NOTE: using ctk stand-in class for now - switch back
-// to dcmtk's scu.h when cget support is in a release version
-//#include <dcmtk/dcmnet/scu.h>
-#include <ctkDcmSCU.h>
-
 #include "dcmtk/oflog/oflog.h"
 
 static ctkLogger logger("org.commontk.dicom.DICOMRetrieve");
@@ -56,7 +52,7 @@ static ctkLogger logger("org.commontk.dicom.DICOMRetrieve");
 //------------------------------------------------------------------------------
 // A customized local implemenation of the DcmSCU so that Qt signals can be emitted
 // when retrieve results are obtained
-class ctkDICOMRetrieveSCUPrivate : public ctkDcmSCU
+class ctkDICOMRetrieveSCUPrivate : public DcmSCU
 {
 public:
   ctkDICOMRetrieve *retrieve;
@@ -76,10 +72,11 @@ public:
         {
         emit this->retrieve->progress("Got move request");
         emit this->retrieve->progress(0);
-        return this->ctkDcmSCU::handleMOVEResponse(
+        return this->DcmSCU::handleMOVEResponse(
                         presID, response, waitForNextResponse);
         }
-      return false;
+      //return false;
+      return EC_IllegalCall;
     };
 
   // called when a data set is coming in from a server in
@@ -100,15 +97,16 @@ public:
         if (this->retrieve && this->retrieve->database())
           {
           this->retrieve->database()->insert(incomingObject);
-          return ECC_Normal;
+          return EC_Normal;
           }
         else
           {
-          return this->ctkDcmSCU::handleSTORERequest(
+          return this->DcmSCU::handleSTORERequest(
                           presID, incomingObject, continueCGETSession, cStoreReturnStatus);
           }
         }
-      return false;
+      //return false;
+      return EC_IllegalCall;
     };
 
   // called when status information from remote server
@@ -122,9 +120,10 @@ public:
         emit this->retrieve->progress("Got CGET response");
         emit this->retrieve->progress(0);
         continueCGETSession = !this->retrieve->wasCanceled();
-        return this->ctkDcmSCU::handleCGETResponse(presID, response, continueCGETSession);
+        return this->DcmSCU::handleCGETResponse(presID, response, continueCGETSession);
         }
-      return false;
+      //return false;
+      return EC_IllegalCall;
     };
 };
 
@@ -208,7 +207,10 @@ ctkDICOMRetrievePrivate::ctkDICOMRetrievePrivate(ctkDICOMRetrieve& obj)
 ctkDICOMRetrievePrivate::~ctkDICOMRetrievePrivate()
 {
   // At least now be kind to the server and release association
-  this->SCU.closeAssociation(DCMSCU_RELEASE_ASSOCIATION);
+  if (this->SCU.isConnected())
+    {
+    this->SCU.closeAssociation(DCMSCU_RELEASE_ASSOCIATION);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -217,11 +219,6 @@ bool ctkDICOMRetrievePrivate::initializeSCU( const QString& studyInstanceUID,
                                          const RetrieveType retrieveType,
                                          DcmDataset *retrieveParameters)
 {
-  if ( !this->Database )
-    {
-    logger.error ( "No Database for retrieve transaction" );
-    return false;
-    }
 
   // If we like to query another server than before, be sure to disconnect first
   if (this->SCU.isConnected() && this->ConnectionParamsChanged)

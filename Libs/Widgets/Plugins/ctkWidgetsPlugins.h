@@ -42,6 +42,7 @@
 #include "ctkDoubleSliderPlugin.h"
 #include "ctkDynamicSpacerPlugin.h"
 #include "ctkExpandButtonPlugin.h"
+#include "ctkExpandableWidgetPlugin.h"
 #include "ctkFittedTextBrowserPlugin.h"
 #include "ctkFontButtonPlugin.h"
 #include "ctkMaterialPropertyPreviewLabelPlugin.h"
@@ -50,6 +51,8 @@
 #include "ctkMenuButtonPlugin.h"
 #include "ctkModalityWidgetPlugin.h"
 #include "ctkPathLineEditPlugin.h"
+#include "ctkPathListButtonsWidgetPlugin.h"
+#include "ctkPathListWidgetPlugin.h"
 #include "ctkPopupWidgetPlugin.h"
 #include "ctkRangeSliderPlugin.h"
 #include "ctkRangeWidgetPlugin.h"
@@ -90,6 +93,7 @@ public:
             << new ctkDoubleSliderPlugin
             << new ctkDynamicSpacerPlugin
             << new ctkExpandButtonPlugin
+            << new ctkExpandableWidgetPlugin
             << new ctkFittedTextBrowserPlugin
             << new ctkFontButtonPlugin
             << new ctkMaterialPropertyPreviewLabelPlugin
@@ -98,6 +102,8 @@ public:
             << new ctkMenuButtonPlugin
             << new ctkModalityWidgetPlugin
             << new ctkPathLineEditPlugin
+            << new ctkPathListButtonsWidgetPlugin
+            << new ctkPathListWidgetPlugin
             << new ctkPopupWidgetPlugin
             << new ctkRangeSliderPlugin
             << new ctkRangeWidgetPlugin

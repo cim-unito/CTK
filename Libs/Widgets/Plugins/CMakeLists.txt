@@ -44,12 +44,16 @@ set(PLUGIN_SRCS
   ctkDynamicSpacerPlugin.h
   ctkExpandButtonPlugin.cpp
   ctkExpandButtonPlugin.h
+  ctkExpandableWidgetPlugin.cpp
+  ctkExpandableWidgetPlugin.h
   #ctkExtensionFactory.cpp
   #ctkExtensionFactory.h
   ctkFittedTextBrowserPlugin.cpp
   ctkFittedTextBrowserPlugin.h
   ctkFontButtonPlugin.cpp
   ctkFontButtonPlugin.h
+  ctkLanguageComboBoxPlugin.cpp
+  ctkLanguageComboBoxPlugin.h
   ctkMaterialPropertyPreviewLabelPlugin.cpp
   ctkMaterialPropertyPreviewLabelPlugin.h
   ctkMaterialPropertyWidgetPlugin.cpp
@@ -62,6 +66,10 @@ set(PLUGIN_SRCS
   ctkModalityWidgetPlugin.h
   ctkPathLineEditPlugin.cpp
   ctkPathLineEditPlugin.h
+  ctkPathListButtonsWidgetPlugin.cpp
+  ctkPathListButtonsWidgetPlugin.h
+  ctkPathListWidgetPlugin.cpp
+  ctkPathListWidgetPlugin.h
   ctkPopupWidgetPlugin.cpp
   ctkPopupWidgetPlugin.h
   ctkRangeSliderPlugin.cpp
@@ -108,15 +116,19 @@ set(PLUGIN_MOC_SRCS
   ctkDoubleSliderPlugin.h
   ctkDynamicSpacerPlugin.h
   ctkExpandButtonPlugin.h
+  ctkExpandableWidgetPlugin.h
   #ctkExtensionFactory.h
   ctkFittedTextBrowserPlugin.h
   ctkFontButtonPlugin.h
+  ctkLanguageComboBoxPlugin.h
   ctkMaterialPropertyWidgetPlugin.h
   ctkMaterialPropertyPreviewLabelPlugin.h
   ctkMatrixWidgetPlugin.h
   ctkMenuButtonPlugin.h
   ctkModalityWidgetPlugin.h
   ctkPathLineEditPlugin.h
+  ctkPathListButtonsWidgetPlugin.h
+  ctkPathListWidgetPlugin.h
   ctkPopupWidgetPlugin.h
   ctkRangeSliderPlugin.h
   ctkRangeWidgetPlugin.h

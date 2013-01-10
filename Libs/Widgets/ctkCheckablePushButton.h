@@ -46,6 +46,8 @@ class ctkCheckablePushButtonPrivate;
 /// \note You can automatically check the button when the user checks the
 /// checkbox by connecting the checkBoxToggled(bool) signal with the
 /// setChecked(bool) slot.
+/// \warning The checkbox is drawn in place of the pushbuton icon, any icon
+/// will then be ignored.
 class CTK_WIDGETS_EXPORT ctkCheckablePushButton : public QPushButton
 {
   Q_OBJECT
@@ -62,13 +64,13 @@ public:
 
   ///
   /// Set the alignment of the text on the button,
-  /// Qt::Left|Qt::VCenter by default.
+  /// Qt::AlignLeft|Qt::AlignVCenter by default.
   void setButtonTextAlignment(Qt::Alignment textAlignment);
   Qt::Alignment buttonTextAlignment()const;
 
   ///
   /// Set the alignment of the indicator (arrow) on the button,
-  /// Qt::Left|Qt::VCenter by default.
+  /// Qt::AlignLeft|Qt::AlignVCenter by default.
   void setIndicatorAlignment(Qt::Alignment indicatorAlignment);
   Qt::Alignment indicatorAlignment()const;
 

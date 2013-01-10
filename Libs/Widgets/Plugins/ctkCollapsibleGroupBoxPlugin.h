@@ -24,16 +24,16 @@
 // CTK includes
 #include "ctkWidgetsAbstractPlugin.h"
 
-class CTK_WIDGETS_PLUGINS_EXPORT ctkCollapsibleGroupBoxPlugin :
-  public QObject,
-  public ctkWidgetsAbstractPlugin
+class CTK_WIDGETS_PLUGINS_EXPORT ctkCollapsibleGroupBoxPlugin
+  : public QObject
+  , public ctkWidgetsAbstractPlugin
 {
   Q_OBJECT
 
 public:
-  ctkCollapsibleGroupBoxPlugin(QObject *_parent = 0);
+  ctkCollapsibleGroupBoxPlugin(QObject* parent = 0);
   
-  QWidget *createWidget(QWidget *_parent);
+  QWidget *createWidget(QWidget* parent);
   QString  domXml() const;
   QIcon    icon() const;
   QString  includeFile() const;

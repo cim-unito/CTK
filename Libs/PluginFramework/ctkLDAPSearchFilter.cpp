@@ -22,7 +22,7 @@
 #include "ctkLDAPSearchFilter.h"
 
 #include "ctkLDAPExpr_p.h"
-#include "ctkServiceReferencePrivate.h"
+#include "ctkServiceReference_p.h"
 
 //----------------------------------------------------------------------------
 class ctkLDAPSearchFilterData : public QSharedData
@@ -53,14 +53,7 @@ ctkLDAPSearchFilter::ctkLDAPSearchFilter()
 ctkLDAPSearchFilter::ctkLDAPSearchFilter(const QString& filter)
   : d(0)
 {
-  try
-  {
-    d = new ctkLDAPSearchFilterData(filter);
-  }
-  catch (const std::exception& e)
-  {
-    throw std::invalid_argument(e.what());
-  }
+  d = new ctkLDAPSearchFilterData(filter);
 }
 
 //----------------------------------------------------------------------------

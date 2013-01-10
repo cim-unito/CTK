@@ -27,7 +27,7 @@
 #-----------------------------------------------------------------------------
 # Declare CTK_EXTERNAL_LIBRARY_DIRS variable - This variable stores
 # the library output directory associated with the different external project
-# It's then used in Utilities/LastConfigureStep/CTKGenerateCTKConfig.cmake to
+# It's then used in CMake/LastConfigureStep/CTKGenerateCTKConfig.cmake to
 # configure CTKConfig.cmake.in
 # This variable would then be exposed to project building against CTK
 set(CTK_EXTERNAL_LIBRARY_DIRS)
@@ -72,22 +72,31 @@ endforeach()
 
 set(ctk_cmake_boolean_args
   BUILD_TESTING
+  CTK_BUILD_ALL
+  CTK_BUILD_ALL_APPS
+  CTK_BUILD_ALL_LIBRARIES
+  CTK_BUILD_ALL_PLUGINS
   CTK_BUILD_QTDESIGNER_PLUGINS
+  CTK_USE_QTTESTING
   CTK_USE_KWSTYLE
+  CTK_USE_CONTRIBUTED_PLUGINS
   WITH_COVERAGE
   DOCUMENTATION_TARGET_IN_ALL
-  CTEST_USE_LAUNCHERS
   CTK_WRAP_PYTHONQT_FULL
   CTK_ENABLE_Python_Wrapping
-  ${ctk_libs_bool_vars}
-  ${ctk_plugins_bool_vars}
-  ${ctk_applications_bool_vars}
   ${ctk_lib_options_list}
   )
 
 set(ctk_superbuild_boolean_args)
 foreach(ctk_cmake_arg ${ctk_cmake_boolean_args})
   list(APPEND ctk_superbuild_boolean_args -D${ctk_cmake_arg}:BOOL=${${ctk_cmake_arg}})
+endforeach()
+
+foreach(ctk_cmake_arg ${ctk_libs_bool_vars} ${ctk_plugins_bool_vars} ${ctk_applications_bool_vars})
+  # Use the cached value of the option in case the current value has been
+  # overridden by a "CTK_BUILD_ALL" option.
+  get_property(arg_value CACHE ${ctk_cmake_arg} PROPERTY VALUE)
+  list(APPEND ctk_superbuild_boolean_args -D${ctk_cmake_arg}:BOOL=${arg_value})
 endforeach()
 
 # message("CMake boolean args:")
@@ -148,6 +157,8 @@ ExternalProject_Add(${proj}
     -DCTK_INSTALL_INCLUDE_DIR:STRING=${CTK_INSTALL_INCLUDE_DIR}
     -DCTK_INSTALL_DOC_DIR:STRING=${CTK_INSTALL_DOC_DIR}
     -DCTK_EXTERNAL_LIBRARY_DIRS:STRING=${CTK_EXTERNAL_LIBRARY_DIRS}
+    -DExternalProjectsContrib_DIR:STRING=${ExternalProjectsContrib_DIR}
+    -DPluginsContrib_DIR:STRING=${PluginsContrib_DIR}
     -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
     ${CTK_SUPERBUILD_EP_ARGS}
     -DCTK_SUPERBUILD_EP_VARNAMES:STRING=${CTK_SUPERBUILD_EP_VARNAMES}

@@ -52,22 +52,48 @@ public:
                     const QString& destinationDirectoryName = "");
 
   ///
+  /// \brief Adds directory to database by using DICOMDIR and optionally copies files to
+  /// destinationDirectory.
+  /// Scan the directory using Dcmtk and populate the database with all the
+  /// DICOM images accordingly.
+  ///
+  Q_INVOKABLE void addDicomdir(ctkDICOMDatabase& database, const QString& directoryName,
+                    const QString& destinationDirectoryName = "");
+
+  ///
+  /// \brief Adds a QStringList containing the file path to database and optionally copies files to
+  /// destinationDirectory.
+  ///
+  /// Scan the directory using Dcmtk and populate the database with all the
+  /// DICOM images accordingly.
+  ///
+  Q_INVOKABLE void addListOfFiles(ctkDICOMDatabase& database, const QStringList& listOfFiles,
+                    const QString& destinationDirectoryName = "");
+
+  ///
   /// \brief Adds a file to database and optionally copies the file to
   /// destinationDirectory.
   ///
   /// Scan the file using Dcmtk and populate the database with all the
   /// DICOM fields accordingly.
   ///
-  Q_INVOKABLE void addFile(ctkDICOMDatabase& database, const QString& filePath,
+  Q_INVOKABLE void addFile(ctkDICOMDatabase& database, const QString filePath,
                     const QString& destinationDirectoryName = "");
 
   Q_INVOKABLE void refreshDatabase(ctkDICOMDatabase& database, const QString& directoryName);
+
+  ///
+  /// \brief ensures that the QFuture threads have all finished indexing
+  /// before returning control.
+  ///
+  Q_INVOKABLE void waitForImportFinished();
 
 Q_SIGNALS:
   void foundFilesToIndex(int);
   void indexingFileNumber(int);
   void indexingFilePath(QString);
   void progress(int);
+  void indexingComplete();
 
 public Q_SLOTS:
   void cancel();

@@ -57,6 +57,16 @@ void ctkVTKConnectionFactory::setInstance(ctkVTKConnectionFactory* newInstance)
 }
 
 //-----------------------------------------------------------------------------
+ctkVTKConnectionFactory::ctkVTKConnectionFactory()
+{
+}
+
+//-----------------------------------------------------------------------------
+ctkVTKConnectionFactory::~ctkVTKConnectionFactory()
+{
+}
+
+//-----------------------------------------------------------------------------
 ctkVTKConnection* ctkVTKConnectionFactory::createConnection(ctkVTKObjectEventsObserver* parent)const
 {
   return new ctkVTKConnection(parent);
@@ -389,6 +399,12 @@ int ctkVTKObjectEventsObserver::removeConnection(vtkObject* vtk_obj, unsigned lo
     delete connection;
     }
   return connections.count();
+}
+
+//-----------------------------------------------------------------------------
+int ctkVTKObjectEventsObserver::removeAllConnections()
+{
+  return this->removeConnection(0, vtkCommand::NoEvent, 0, 0);
 }
 
 //-----------------------------------------------------------------------------

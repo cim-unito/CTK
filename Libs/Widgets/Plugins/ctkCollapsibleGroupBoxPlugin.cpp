@@ -26,15 +26,19 @@
 #include "ctkCollapsibleGroupBox.h"
 
 // --------------------------------------------------------------------------
-ctkCollapsibleGroupBoxPlugin::ctkCollapsibleGroupBoxPlugin(QObject *_parent) : QObject(_parent)
+ctkCollapsibleGroupBoxPlugin
+::ctkCollapsibleGroupBoxPlugin(QObject* parentObject)
+  : QObject(parentObject)
 {
 }
 
 // --------------------------------------------------------------------------
-QWidget *ctkCollapsibleGroupBoxPlugin::createWidget(QWidget *_parent)
+QWidget *ctkCollapsibleGroupBoxPlugin
+::createWidget(QWidget* futurParentWidget)
 {
-  ctkCollapsibleGroupBox* _widget = new ctkCollapsibleGroupBox(_parent);
-  return _widget;
+  ctkCollapsibleGroupBox* widget =
+    new ctkCollapsibleGroupBox(futurParentWidget);
+  return widget;
 }
 
 // --------------------------------------------------------------------------

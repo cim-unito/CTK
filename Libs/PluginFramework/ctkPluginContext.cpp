@@ -19,15 +19,15 @@
 
 =============================================================================*/
 
+#include "ctkPlugin_p.h"
 #include "ctkPluginContext.h"
 #include "ctkPluginContext_p.h"
-
-#include "ctkPluginPrivate_p.h"
 #include "ctkPluginFrameworkContext_p.h"
+
 #include "ctkServices_p.h"
 #include "ctkServiceRegistration.h"
 #include "ctkServiceReference.h"
-#include "ctkServiceReferencePrivate.h"
+#include "ctkServiceReference_p.h"
 
 #include <stdexcept>
 
@@ -159,7 +159,7 @@ QObject* ctkPluginContext::getService(const ctkServiceReference& reference)
 
   if (!reference)
   {
-    throw std::invalid_argument("Default constructed ctkServiceReference is not a valid input to getService()");
+    throw ctkInvalidArgumentException("Default constructed ctkServiceReference is not a valid input to getService()");
   }
   ctkServiceReference internalRef(reference);
   return internalRef.d_func()->getService(d->plugin->q_func());
@@ -175,7 +175,7 @@ bool ctkPluginContext::ungetService(const ctkServiceReference& reference)
 }
 
 //----------------------------------------------------------------------------
-bool ctkPluginContext::connectPluginListener(const QObject* receiver, const char* method,
+bool ctkPluginContext::connectPluginListener(const QObject* receiver, const char* slot,
                                              Qt::ConnectionType type)
 {
   Q_D(ctkPluginContext);
@@ -183,25 +183,44 @@ bool ctkPluginContext::connectPluginListener(const QObject* receiver, const char
   // TODO check permissions for a direct connection
   if (type == Qt::DirectConnection || type == Qt::BlockingQueuedConnection)
   {
-    return receiver->connect(&(d->plugin->fwCtx->listeners), SIGNAL(pluginChangedDirect(ctkPluginEvent)), method, type);
+    return receiver->connect(&(d->plugin->fwCtx->listeners), SIGNAL(pluginChangedDirect(ctkPluginEvent)), slot, type);
   }
   else if (type == Qt::QueuedConnection)
   {
-    return receiver->connect(&(d->plugin->fwCtx->listeners), SIGNAL(pluginChangedQueued(ctkPluginEvent)), method, type);
+    return receiver->connect(&(d->plugin->fwCtx->listeners), SIGNAL(pluginChangedQueued(ctkPluginEvent)), slot, type);
   }
   else
   {
-    throw std::invalid_argument("Only Qt::DirectConnection, Qt::QueuedConnection, or Qt::BlockingQueuedConnection are allowed as type argument.");
+    throw ctkInvalidArgumentException("Only Qt::DirectConnection, Qt::QueuedConnection, or Qt::BlockingQueuedConnection are allowed as type argument.");
   }
 }
 
 //----------------------------------------------------------------------------
-bool ctkPluginContext::connectFrameworkListener(const QObject* receiver, const char* method, Qt::ConnectionType type)
+void ctkPluginContext::disconnectPluginListener(const QObject *receiver, const char* slot)
+{
+  Q_D(ctkPluginContext);
+  d->isPluginContextValid();
+
+  QObject::disconnect(&(d->plugin->fwCtx->listeners), SIGNAL(pluginChangedDirect(ctkPluginEvent)), receiver, slot);
+  QObject::disconnect(&(d->plugin->fwCtx->listeners), SIGNAL(pluginChangedQueued(ctkPluginEvent)), receiver, slot);
+}
+
+//----------------------------------------------------------------------------
+bool ctkPluginContext::connectFrameworkListener(const QObject* receiver, const char* slot, Qt::ConnectionType type)
 {
   Q_D(ctkPluginContext);
   d->isPluginContextValid();
   // TODO check permissions for a direct connection
-  return receiver->connect(&(d->plugin->fwCtx->listeners), SIGNAL(frameworkEvent(ctkPluginFrameworkEvent)), method, type);
+  return receiver->connect(&(d->plugin->fwCtx->listeners), SIGNAL(frameworkEvent(ctkPluginFrameworkEvent)), slot, type);
+}
+
+//----------------------------------------------------------------------------
+void ctkPluginContext::disconnectFrameworkListener(const QObject *receiver, const char* slot)
+{
+  Q_D(ctkPluginContext);
+  d->isPluginContextValid();
+
+  QObject::disconnect(&(d->plugin->fwCtx->listeners), SIGNAL(frameworkEvent(ctkPluginFrameworkEvent)), receiver, slot);
 }
 
 //----------------------------------------------------------------------------

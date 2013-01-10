@@ -24,15 +24,15 @@
 #include "ctkWidgetsExport.h"
 #include "ui_ctkThumbnailListWidget.h"
 
+class ctkThumbnailLabel;
 class ctkThumbnailListWidget;
 
 //----------------------------------------------------------------------------
 /// \ingroup Widgets
-class CTK_WIDGETS_EXPORT ctkThumbnailListWidgetPrivate : public Ui_ctkThumbnailListWidget
+class CTK_WIDGETS_EXPORT ctkThumbnailListWidgetPrivate
+  : public Ui_ctkThumbnailListWidget
 {
   Q_DECLARE_PUBLIC(ctkThumbnailListWidget);
-protected:
-  ctkThumbnailListWidget* const q_ptr;
 public:
   ctkThumbnailListWidgetPrivate(ctkThumbnailListWidget* parent);
 
@@ -40,9 +40,18 @@ public:
   void init();
 
   void clearAllThumbnails();
+  void addThumbnail(ctkThumbnailLabel* thumbnail);
+  void updateScrollAreaContentWidgetSize(QSize size);
+
+protected:
+  ctkThumbnailListWidget* const q_ptr;
 
   int CurrentThumbnail;
   QSize ThumbnailSize;
+  bool RequestRelayout;
+
+private:
+  Q_DISABLE_COPY( ctkThumbnailListWidgetPrivate );
 };
 
 #endif

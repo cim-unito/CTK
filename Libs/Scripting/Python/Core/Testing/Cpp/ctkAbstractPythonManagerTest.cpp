@@ -1,4 +1,8 @@
 
+// Qt includes
+#include <QTemporaryFile>
+#include <QTextStream>
+
 // CTK includes
 #include "ctkAbstractPythonManager.h"
 #include "ctkTest.h"
@@ -9,6 +13,11 @@
 // STD includes
 #include <cstdlib>
 #include <iostream>
+
+//-----------------------------------------------------------------------------
+#if QT_VERSION < 0x040700
+  Q_DECLARE_METATYPE(QVariant)
+#endif
 
 //-----------------------------------------------------------------------------
 class ctkAbstractPythonManagerTester: public QObject
@@ -26,6 +35,8 @@ private Q_SLOTS:
   void testPythonErrorOccured();
   void testPythonErrorOccured_data();
 
+  void testInitialize();
+
   void testMainContext();
 
   void testAddObjectToPythonMain();
@@ -36,7 +47,8 @@ private Q_SLOTS:
   void testExecuteString();
   void testExecuteString_data();
 
-  //void testExecuteFile(); // TODO
+  void testExecuteFile();
+  void testExecuteFile_data();
 
   //void testPythonAttributes(); // TODO
 };
@@ -67,6 +79,12 @@ void ctkAbstractPythonManagerTester::testSetInitializationFlags()
   QCOMPARE(this->PythonManager.initializationFlags(), expectedFlagsPostInit);
 
   QCOMPARE(this->PythonManager.isPythonInitialized(), true);
+}
+
+// ----------------------------------------------------------------------------
+void ctkAbstractPythonManagerTester::testInitialize()
+{
+  QVERIFY(this->PythonManager.initialize());
 }
 
 // ----------------------------------------------------------------------------
@@ -149,6 +167,42 @@ void ctkAbstractPythonManagerTester::testExecuteString_data()
   QTest::newRow("3") << QString("7")
                      << static_cast<int>(ctkAbstractPythonManager::EvalInput)
                      << QVariant(7) << QString("b") << QVariant();
+}
+
+// ----------------------------------------------------------------------------
+void ctkAbstractPythonManagerTester::testExecuteFile()
+{
+  QFETCH(QString, stringToExecute);
+  QFETCH(bool, pythonErrorExpected);
+
+  QTemporaryFile pythonFile("testExecuteFile-XXXXXX.py");
+  QVERIFY(pythonFile.open());
+  QTextStream out(&pythonFile);
+  out << stringToExecute;
+  pythonFile.close();
+
+  this->PythonManager.executeFile(pythonFile.fileName());
+
+  QCOMPARE(this->PythonManager.pythonErrorOccured(), pythonErrorExpected);
+}
+
+// ----------------------------------------------------------------------------
+void ctkAbstractPythonManagerTester::testExecuteFile_data()
+{
+  QTest::addColumn<QString>("stringToExecute");
+  QTest::addColumn<bool>("pythonErrorExpected");
+
+  QTest::newRow("0-emptyfile") << QString("")
+                     << false;
+
+  QTest::newRow("1-helloworld") << QString("print 'Hello world'")
+                     << false;
+
+  QTest::newRow("2-syntaxerror") << QString("print '") // SyntaxError
+                     << true;
+
+  QTest::newRow("3-check __file__ attribute") << QString("print 'This file is: %s' % __file__")
+                     << false;
 }
 
 // ----------------------------------------------------------------------------

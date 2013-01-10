@@ -109,14 +109,21 @@ int ctkAbstractPythonManager::initializationFlags()const
 }
 
 //-----------------------------------------------------------------------------
-PythonQtObjectPtr ctkAbstractPythonManager::mainContext()
+bool ctkAbstractPythonManager::initialize()
 {
   Q_D(ctkAbstractPythonManager);
   if (!PythonQt::self())
     {
     this->initPythonQt(d->PythonQtInitializationFlags);
     }
-  if (PythonQt::self())
+  return this->isPythonInitialized();
+}
+
+//-----------------------------------------------------------------------------
+PythonQtObjectPtr ctkAbstractPythonManager::mainContext()
+{
+  bool initalized = this->initialize();
+  if (initalized)
     {
     return PythonQt::self()->getMainModule();
     }
@@ -136,7 +143,9 @@ void ctkAbstractPythonManager::initPythonQt(int flags)
   signal(SIGINT, SIG_DFL);
   #endif
 
-  PythonQtObjectPtr _mainContext = PythonQt::self()->getMainModule();
+  // Forward signal from PythonQt::self() to this instance of ctkAbstractPythonManager
+  this->connect(PythonQt::self(), SIGNAL(systemExitExceptionRaised(int)),
+                SIGNAL(systemExitExceptionRaised(int)));
 
   this->connect(PythonQt::self(), SIGNAL(pythonStdOut(QString)),
                 SLOT(printStdout(QString)));
@@ -154,6 +163,7 @@ void ctkAbstractPythonManager::initPythonQt(int flags)
     initCode << QString("sys.path.append('%1')").arg(QDir::fromNativeSeparators(path));
     }
 
+  PythonQtObjectPtr _mainContext = PythonQt::self()->getMainModule();
   _mainContext.evalScript(initCode.join("\n"));
 
   this->preInitialization();
@@ -177,6 +187,12 @@ bool ctkAbstractPythonManager::isPythonInitialized()const
 bool ctkAbstractPythonManager::pythonErrorOccured()const
 {
   return PythonQt::self()->errorOccured();
+}
+
+//-----------------------------------------------------------------------------
+void ctkAbstractPythonManager::resetErrorFlag()
+{
+  PythonQt::self()->resetErrorFlag();
 }
 
 //-----------------------------------------------------------------------------
@@ -214,6 +230,20 @@ void ctkAbstractPythonManager::registerCPPClassForPythonQt(const char* name)
 }
 
 //-----------------------------------------------------------------------------
+bool ctkAbstractPythonManager::systemExitExceptionHandlerEnabled()const
+{
+  Q_D(const ctkAbstractPythonManager);
+  return PythonQt::self()->systemExitExceptionHandlerEnabled();
+}
+
+//-----------------------------------------------------------------------------
+void ctkAbstractPythonManager::setSystemExitExceptionHandlerEnabled(bool value)
+{
+  Q_D(ctkAbstractPythonManager);
+  PythonQt::self()->setSystemExitExceptionHandlerEnabled(value);
+}
+
+//-----------------------------------------------------------------------------
 QVariant ctkAbstractPythonManager::executeString(const QString& code,
                                                  ctkAbstractPythonManager::ExecuteStringMode mode)
 {
@@ -242,9 +272,24 @@ void ctkAbstractPythonManager::executeFile(const QString& filename)
   if (main)
     {
     QString path = QFileInfo(filename).absolutePath();
-    this->executeString(QString("import sys\nsys.path.insert(0, '%1')").arg(path));
-    main.evalFile(filename);
-    this->executeString(QString("import sys\nif sys.path[0] == '%1': sys.path.pop(0)").arg(path));
+    // See http://nedbatchelder.com/blog/200711/rethrowing_exceptions_in_python.html
+    QStringList code = QStringList()
+        << "import sys"
+        << QString("sys.path.insert(0, '%1')").arg(path)
+        << "_updated_globals = globals()"
+        << QString("_updated_globals['__file__'] = '%1'").arg(filename)
+        << "_ctk_executeFile_exc_info = None"
+        << "try:"
+        << QString("    execfile('%1', _updated_globals)").arg(filename)
+        << "except Exception, e:"
+        << "    _ctk_executeFile_exc_info = sys.exc_info()"
+        << "finally:"
+        << "    del _updated_globals"
+        << QString("    if sys.path[0] == '%1': sys.path.pop(0)").arg(path)
+        << "    if _ctk_executeFile_exc_info:"
+        << "        raise _ctk_executeFile_exc_info[1], None, _ctk_executeFile_exc_info[2]";
+    this->executeString(code.join("\n"));
+    //PythonQt::self()->handleError(); // Clear errorOccured flag
     }
 }
 
@@ -353,6 +398,12 @@ void ctkAbstractPythonManager::addObjectToPythonMain(const QString& name, QObjec
     {
     main.addObject(name, obj);
     }
+}
+
+//-----------------------------------------------------------------------------
+void ctkAbstractPythonManager::addWrapperFactory(PythonQtForeignWrapperFactory* factory)
+{
+  PythonQt::self()->addWrapperFactory(factory);
 }
 
 //-----------------------------------------------------------------------------

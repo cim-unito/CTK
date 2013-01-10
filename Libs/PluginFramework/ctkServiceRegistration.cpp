@@ -19,17 +19,16 @@
 
 =============================================================================*/
 
-#include "ctkServiceRegistration.h"
-#include "ctkServiceRegistrationPrivate.h"
-#include "ctkPluginFrameworkContext_p.h"
-#include "ctkPluginPrivate_p.h"
-#include "ctkPluginConstants.h"
-
-#include "ctkServices_p.h"
-#include "ctkServiceFactory.h"
-#include "ctkServiceSlotEntry_p.h"
-
 #include <QMutex>
+
+#include "ctkPluginFrameworkContext_p.h"
+#include "ctkPlugin_p.h"
+#include "ctkPluginConstants.h"
+#include "ctkServiceFactory.h"
+#include "ctkServiceRegistration.h"
+#include "ctkServiceRegistration_p.h"
+#include "ctkServices_p.h"
+#include "ctkServiceSlotEntry_p.h"
 
 #include <stdexcept>
 
@@ -191,11 +190,10 @@ void ctkServiceRegistration::unregister()
                                                                        *this,
                                                                        obj);
           }
-          catch (const std::exception& ue)
+          catch (const ctkException& ue)
           {
             ctkPluginFrameworkEvent pfwEvent(ctkPluginFrameworkEvent::PLUGIN_ERROR, d->plugin->q_func(), ue);
-            d->plugin->fwCtx->listeners
-                .emitFrameworkEvent(pfwEvent);
+            d->plugin->fwCtx->listeners.emitFrameworkEvent(pfwEvent);
           }
         }
       }

@@ -19,10 +19,9 @@
 
 =============================================================================*/
 
-#include "ctkRequirePlugin_p.h"
-
+#include "ctkPlugin_p.h"
 #include "ctkPluginConstants.h"
-#include "ctkPluginPrivate_p.h"
+#include "ctkRequirePlugin_p.h"
 
 //----------------------------------------------------------------------------
 ctkRequirePlugin::ctkRequirePlugin(ctkPluginPrivate* requestor,
@@ -45,7 +44,7 @@ ctkRequirePlugin::ctkRequirePlugin(ctkPluginPrivate* requestor,
                    + ". The value must be either '"
                    + ctkPluginConstants::RESOLUTION_MANDATORY + "' or '"
                    + ctkPluginConstants::RESOLUTION_OPTIONAL  + "'.";
-    throw std::invalid_argument(what.toStdString());
+    throw ctkInvalidArgumentException(what);
     }
 
 

@@ -21,12 +21,12 @@
 #ifndef __ctkThumbnailListWidget_h
 #define __ctkThumbnailListWidget_h
 
-// Qt includes 
+// Qt includes
 #include <QWidget>
+class QResizeEvent;
 
+// CTK includes
 #include "ctkWidgetsExport.h"
-
-class QModelIndex;
 class ctkThumbnailListWidgetPrivate;
 class ctkThumbnailLabel;
 
@@ -35,14 +35,18 @@ class CTK_WIDGETS_EXPORT ctkThumbnailListWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY(int currentThumbnail READ currentThumbnail WRITE setCurrentThumbnail)
+  Q_PROPERTY(Qt::Orientation flow READ flow WRITE setFlow)
   Q_PROPERTY(QSize thumbnailSize READ thumbnailSize WRITE setThumbnailSize)
 public:
   typedef QWidget Superclass;
   explicit ctkThumbnailListWidget(QWidget* parent=0);
   virtual ~ctkThumbnailListWidget();
-  
+
+  /// Add a thumbnail to the widget
+  void addThumbnail(const QPixmap& thumbnail, const QString& label = QString());
+
   /// Add multiple thumbnails to the widget
-  void addThumbnails(QList<QPixmap> thumbnails);
+  void addThumbnails(const QList<QPixmap>& thumbnails);
 
   /// Set current thumbnail
   void setCurrentThumbnail(int index);
@@ -53,8 +57,16 @@ public:
   /// Clear all the thumbnails
   void clearThumbnails();
 
+  /// Flow of the layout
+  ///  - Qt::Horizontal: left to right
+  ///  - Qt::Vertical: top to bottom
+  void setFlow(Qt::Orientation orientation);
+  Qt::Orientation flow()const;
+
   /// Get thumbnail width
   QSize thumbnailSize()const;
+
+  virtual bool eventFilter(QObject* watched, QEvent* event);
 
 public Q_SLOTS:
   /// Set thumbnail width
@@ -66,10 +78,13 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
   void onThumbnailSelected(const ctkThumbnailLabel& widget);
+  void updateLayout();
 
 protected:
   explicit ctkThumbnailListWidget(ctkThumbnailListWidgetPrivate* ptr, QWidget* parent=0);
   ctkThumbnailListWidgetPrivate* d_ptr;
+
+  virtual void resizeEvent(QResizeEvent* event);
 
 private:
   Q_DECLARE_PRIVATE(ctkThumbnailListWidget);
