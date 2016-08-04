@@ -116,7 +116,6 @@ void ctkWorkflowGroupBox::updateGroupBox(ctkWorkflowStep* currentStep)
 
   if (currentWidgetStep)
     {
-    ctkWorkflowWidget::formatButton(d->CollapsibleButton, d->TitleFormat, currentWidgetStep);
     QString subTitleText = ctkWorkflowWidget::formatText(d->SubTitleFormat, currentWidgetStep);
     this->setSubTitle(subTitleText);
     QString errorText = ctkWorkflowWidget::formatText(d->ErrorTextFormat, currentWidgetStep);
@@ -167,7 +166,7 @@ void ctkWorkflowGroupBox::updateGroupBox(ctkWorkflowStep* currentStep)
 QString ctkWorkflowGroupBox::title()const
 {
   Q_D(const ctkWorkflowGroupBox);
-  return d->CollapsibleButton->text();
+  return d->TitleLabel->text();
 }
 
 // --------------------------------------------------------------------------
