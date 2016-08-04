@@ -423,10 +423,7 @@ void ctkWorkflowPrivate::processingAfterOnEntry()
       q->goForward();
       }
     }
-  else
-    {
-    emit q->currentStepChanged(this->CurrentStep);
-    }
+  emit q->currentStepChanged(this->CurrentStep);
 }
 
 // --------------------------------------------------------------------------
@@ -947,14 +944,14 @@ void ctkWorkflow::goToStep(const QString& targetId)
     qDebug() << QString("goToStep - Attempting to go to finish step %1").arg(targetId);
     }
 
-  // if (step == d->CurrentStep)
-  //   {
-  //   if (d->Verbose)
-  //     {
-  //     qDebug() << "we are already in the desired finish step";
-  //     }
-  //   return;
-  //   }
+  if (targetId == d->CurrentStep->id())
+    {
+    if (d->Verbose)
+      {
+      qDebug() << "we are already in the desired finish step";
+      return;
+      }
+    }
 
   d->GoToStep = d->stepFromId(targetId);
   d->StartingStep = d->CurrentStep;
