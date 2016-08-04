@@ -124,9 +124,9 @@ void ctkWorkflowWidget::setWorkflow(ctkWorkflow* newWorkflow)
   if (!d->Workflow.isNull())
     {
     QObject::disconnect(d->Workflow.data(), SIGNAL(currentStepChanged(ctkWorkflowStep*)),
-                        this, SLOT(onCurrentStepChanged(ctkWorkflowStep)));
+                        this, SLOT(onCurrentStepChanged(ctkWorkflowStep*)));
     QObject::disconnect(d->Workflow.data(), SIGNAL(stepRegistered(ctkWorkflowStep*)),
-                        this, SLOT(onStepRegistered(ctkWorkflowStep)));
+                        this, SLOT(onStepRegistered(ctkWorkflowStep*)));
     }
 
   d->Workflow = newWorkflow;
